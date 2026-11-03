@@ -4,180 +4,274 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>For You ❤️</title>
 
 <style>
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    background: #080808;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
+  background: #050505;
+  color: white;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
 }
 
 canvas {
-    display: block;
-    width: 100vw;
-    height: 100vh;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+#start {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  background: #050505;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+#start h1 {
+  color: #ff604d;
+  font-size: 30px;
+}
+
+button {
+  background: #ff3d50;
+  color: white;
+  border: none;
+  padding: 14px 25px;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#musicBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 4;
+}
+
+#caption {
+  position: fixed;
+  bottom: 25px;
+  width: 100%;
+  text-align: center;
+  color: #ff7969;
+  font-size: 14px;
+  pointer-events: none;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="love"></canvas>
+<canvas id="canvas"></canvas>
+
+<div id="start">
+  <h1>For Someone Special ❤️</h1>
+  <p>Ada sesuatu untuk kamu...</p>
+  <button onclick="startLove()">Buka ❤️</button>
+</div>
+
+<button id="musicBtn" onclick="toggleMusic()">
+  🎵 Play Music
+</button>
+
+<div id="caption">I LOVE YOU ❤️</div>
+
+<audio id="music" loop preload="auto">
+  <source src="Tulus_-_Jatuh_Suka_(mp3.pm).aac" type="audio/aac">
+</audio>
 
 <script>
-const canvas = document.getElementById("love");
+const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let width, height;
+const music = document.getElementById("music");
+
+let W, H;
 let words = [];
-let particles = [];
+let started = false;
+let musicPlaying = false;
 
+// Bentuk hati
+function heart(t) {
+  return {
+    x: 16 * Math.pow(Math.sin(t), 3),
+
+    y: 13 * Math.cos(t)
+      - 5 * Math.cos(2 * t)
+      - 2 * Math.cos(3 * t)
+      - Math.cos(4 * t)
+  };
+}
+
+// Ukuran layar
 function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
 
-    width = canvas.width;
-    height = canvas.height;
-
-    createWords();
+  createHeart();
 }
 
 window.addEventListener("resize", resize);
 
-// Bentuk hati
-function heart(t) {
-    const x = 16 * Math.pow(Math.sin(t), 3);
+// Membuat tulisan membentuk hati
+function createHeart() {
+  words = [];
 
-    const y =
-        13 * Math.cos(t) -
-        5 * Math.cos(2 * t) -
-        2 * Math.cos(3 * t) -
-        Math.cos(4 * t);
+  const scale = Math.min(W, H) / 36;
 
-    return { x, y };
-}
+  for (let i = 0; i < 350; i++) {
 
-// Membuat tulisan mengikuti pola hati
-function createWords() {
-    words = [];
+    const t = Math.random() * Math.PI * 2;
 
-    const scale = Math.min(width, height) / 36;
-    const total = 180;
+    const radius = Math.sqrt(Math.random());
 
-    for (let i = 0; i < total; i++) {
-        const t = Math.random() * Math.PI * 2;
-        const point = heart(t);
+    const p = heart(t);
 
-        const inside = Math.random();
+    words.push({
 
-        const x = width / 2 +
-            point.x * scale * inside;
+      x: Math.random() * W,
+      y: Math.random() * H,
 
-        const y = height / 2 -
-            point.y * scale * inside;
+      tx: W / 2 + p.x * scale * radius,
+      ty: H / 2 - p.y * scale * radius,
 
-        words.push({
-            x: Math.random() * width,
-            y: Math.random() * height,
-            targetX: x,
-            targetY: y,
-            size: Math.random() * 7 + 7,
-            speed: Math.random() * 0.025 + 0.008,
-            phase: Math.random() * 6,
-            text: Math.random() > 0.3
-                ? "I LOVE YOU"
-                : "love you",
-            color: Math.random() > 0.5
-                ? "#ff5733"
-                : "#ff8566"
-        });
-    }
+      size: Math.random() * 8 + 7,
 
-    // Tulisan tambahan di sekitar hati
-    for (let i = 0; i < 100; i++) {
-        words.push({
-            x: Math.random() * width,
-            y: Math.random() * height,
-            targetX: Math.random() * width,
-            targetY: Math.random() * height,
-            size: Math.random() * 5 + 5,
-            speed: Math.random() * 0.02 + 0.005,
-            phase: Math.random() * 6,
-            text: Math.random() > 0.5
-                ? "I love you"
-                : "love",
-            color: "#ff6347"
-        });
-    }
+      speed: Math.random() * 0.025 + 0.008,
+
+      phase: Math.random() * 10,
+
+      text: Math.random() > 0.3
+        ? "I LOVE YOU"
+        : "love you",
+
+      color: Math.random() > 0.5
+        ? "#ff513d"
+        : "#ff9275"
+    });
+  }
 }
 
 // Animasi
 function animate(time) {
-    ctx.fillStyle = "rgba(8, 8, 8, 0.25)";
-    ctx.fillRect(0, 0, width, height);
 
-    words.forEach((word, i) => {
+  ctx.fillStyle = "rgba(5,5,5,0.25)";
+  ctx.fillRect(0, 0, W, H);
 
-        const floatX = Math.sin(time * 0.001 + word.phase) * 15;
-        const floatY = Math.cos(time * 0.001 + word.phase) * 12;
+  if (started) {
 
-        word.x += (word.targetX - word.x) * word.speed;
-        word.y += (word.targetY - word.y) * word.speed;
+    words.forEach((w, i) => {
 
-        ctx.save();
+      const floatX =
+        Math.sin(time * 0.001 + w.phase) * 12;
 
-        ctx.translate(
-            word.x + floatX,
-            word.y + floatY
-        );
+      const floatY =
+        Math.cos(time * 0.0015 + w.phase) * 10;
 
-        ctx.font = `bold ${word.size}px Arial`;
+      w.x += (w.tx - w.x) * w.speed;
+      w.y += (w.ty - w.y) * w.speed;
 
-        ctx.fillStyle = word.color;
+      ctx.save();
 
-        ctx.globalAlpha =
-            0.35 + Math.abs(Math.sin(time * 0.002 + i)) * 0.65;
+      ctx.translate(
+        w.x + floatX,
+        w.y + floatY
+      );
 
-        ctx.shadowColor = "#ff3300";
-        ctx.shadowBlur = 8;
+      ctx.font = `bold ${w.size}px Arial`;
 
-        ctx.fillText(word.text, 0, 0);
+      ctx.fillStyle = w.color;
 
-        ctx.restore();
+      ctx.globalAlpha =
+        0.45 + Math.abs(Math.sin(time * 0.002 + i)) * 0.55;
+
+      ctx.shadowColor = "#ff3010";
+      ctx.shadowBlur = 8;
+
+      ctx.fillText(w.text, 0, 0);
+
+      ctx.restore();
+
     });
+  }
 
-    requestAnimationFrame(animate);
+  requestAnimationFrame(animate);
 }
 
+// Tombol buka
+async function startLove() {
+
+  started = true;
+
+  document.getElementById("start").style.display = "none";
+
+  try {
+
+    await music.play();
+
+    musicPlaying = true;
+
+    document.getElementById("musicBtn").textContent =
+      "⏸ Pause Music";
+
+  } catch (error) {
+
+    document.getElementById("musicBtn").textContent =
+      "🎵 Play Music";
+
+  }
+}
+
+// Tombol musik
+async function toggleMusic() {
+
+  if (musicPlaying) {
+
+    music.pause();
+
+    musicPlaying = false;
+
+    document.getElementById("musicBtn").textContent =
+      "🎵 Play Music";
+
+  } else {
+
+    try {
+
+      await music.play();
+
+      musicPlaying = true;
+
+      document.getElementById("musicBtn").textContent =
+        "⏸ Pause Music";
+
+    } catch (error) {
+
+      alert("Musik belum bisa diputar. Periksa file lagu di GitHub.");
+
+    }
+  }
+}
+
+// Mulai
 resize();
 
 requestAnimationFrame(animate);
 
-// Klik layar untuk menambah efek hati
-canvas.addEventListener("click", function(e) {
-
-    for (let i = 0; i < 12; i++) {
-
-        words.push({
-            x: e.clientX,
-            y: e.clientY,
-            targetX: e.clientX + (Math.random() - 0.5) * 180,
-            targetY: e.clientY + (Math.random() - 0.5) * 180,
-            size: Math.random() * 10 + 8,
-            speed: 0.04,
-            phase: Math.random() * 6,
-            text: "I LOVE YOU",
-            color: "#ff5533"
-        });
-    }
-});
 </script>
 
 </body>
