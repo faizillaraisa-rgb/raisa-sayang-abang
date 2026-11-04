@@ -4,8 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>For You ❤️</title>
+<title>For Farhan ❤️</title>
 
 <style>
 * {
@@ -15,60 +14,77 @@
 }
 
 body {
-  background: #050505;
-  color: white;
+  width: 100%;
+  height: 100vh;
   overflow: hidden;
+  background: #020511;
   font-family: Arial, sans-serif;
+  color: white;
 }
 
 canvas {
-  display: block;
-  width: 100vw;
-  height: 100vh;
-}
-
-#start {
   position: fixed;
   inset: 0;
-  z-index: 5;
-  background: #050505;
+  width: 100%;
+  height: 100%;
+}
+
+#intro {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 20px;
   text-align: center;
+  padding: 25px;
+  background: radial-gradient(circle, #102448, #020511 75%);
+  transition: opacity 1.5s;
 }
 
-#start h1 {
-  color: #ff604d;
-  font-size: 30px;
+#intro h1 {
+  font-size: clamp(30px, 7vw, 55px);
+  color: #b7edff;
+  text-shadow: 0 0 15px #00aaff, 0 0 40px #0077ff;
+  letter-spacing: 4px;
+}
+
+#intro p {
+  color: #c5dfff;
+  font-size: 15px;
+  letter-spacing: 2px;
 }
 
 button {
-  background: #ff3d50;
+  border: 1px solid #63d8ff;
+  border-radius: 50px;
+  padding: 15px 30px;
+  background: rgba(0, 60, 120, 0.45);
   color: white;
-  border: none;
-  padding: 14px 25px;
-  border-radius: 30px;
-  font-size: 16px;
+  font-size: 14px;
+  letter-spacing: 2px;
   cursor: pointer;
+  box-shadow: 0 0 20px #009dff80;
+  transition: 0.3s;
 }
 
-#musicBtn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 4;
+button:hover {
+  background: #07518a;
+  box-shadow: 0 0 35px #00aaff;
+  transform: scale(1.06);
 }
 
-#caption {
+#musicNote {
   position: fixed;
-  bottom: 25px;
+  bottom: 15px;
   width: 100%;
   text-align: center;
-  color: #ff7969;
-  font-size: 14px;
+  color: #87cfff;
+  font-size: 11px;
+  letter-spacing: 2px;
+  opacity: 0.7;
   pointer-events: none;
 }
 </style>
@@ -78,38 +94,37 @@ button {
 
 <canvas id="canvas"></canvas>
 
-<div id="start">
-  <h1>For Someone Special ❤️</h1>
-  <p>Ada sesuatu untuk kamu...</p>
-  <button onclick="startLove()">Buka ❤️</button>
+<div id="intro">
+  <h1>A LITTLE SURPRISE</h1>
+  <p>Something special is waiting for you...</p>
+  <button onclick="startShow()">OPEN FOR FARHAN 💙</button>
 </div>
 
-<button id="musicBtn" onclick="toggleMusic()">
-  🎵 Play Music
-</button>
-
-<div id="caption">I LOVE YOU ❤️</div>
-
-<audio id="music" loop preload="auto">
-  <source src="Tulus_-_Jatuh_Suka_(mp3.pm).aac" type="audio/aac">
-</audio>
+<div id="musicNote">MADE WITH LOVE ✨</div>
 
 <script>
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-const music = document.getElementById("music");
-
-let W, H;
-let words = [];
+let W, H, dpr;
 let started = false;
-let musicPlaying = false;
+let startTime = 0;
+let time = 0;
 
-// Bentuk hati
-function heart(t) {
+let stars = [];
+let sparkles = [];
+let heartWords = [];
+let heartOutline = [];
+
+const TWO_PI = Math.PI * 2;
+
+// ==================================
+// BENTUK DASAR HATI
+// ==================================
+
+function heartPoint(t) {
   return {
     x: 16 * Math.pow(Math.sin(t), 3),
-
     y: 13 * Math.cos(t)
       - 5 * Math.cos(2 * t)
       - 2 * Math.cos(3 * t)
@@ -117,161 +132,539 @@ function heart(t) {
   };
 }
 
-// Ukuran layar
-function resize() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
+function makeHeartOutline() {
+  heartOutline = [];
 
-  createHeart();
+  for (let i = 0; i <= 300; i++) {
+    const point = heartPoint(i / 300 * TWO_PI);
+    heartOutline.push(point);
+  }
+}
+
+// Mengecek apakah titik ada di dalam bentuk hati
+function isInsideHeart(x, y) {
+  let inside = false;
+
+  for (
+    let i = 0, j = heartOutline.length - 1;
+    i < heartOutline.length;
+    j = i++
+  ) {
+    const a = heartOutline[i];
+    const b = heartOutline[j];
+
+    const cross =
+      ((a.y > y) !== (b.y > y)) &&
+      (x < (b.x - a.x) * (y - a.y) /
+      (b.y - a.y) + a.x);
+
+    if (cross) inside = !inside;
+  }
+
+  return inside;
+}
+
+// ==================================
+// UKURAN LAYAR
+// ==================================
+
+function heartScale() {
+  return Math.min(W, H) * 0.014;
+}
+
+function textSize() {
+  return Math.max(9, Math.min(15, Math.min(W, H) * 0.018));
+}
+
+function resize() {
+  W = window.innerWidth;
+  H = window.innerHeight;
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+
+  canvas.style.width = W + "px";
+  canvas.style.height = H + "px";
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  makeHeartOutline();
+  createStars();
+  createSparkles();
+  createHeartWords();
 }
 
 window.addEventListener("resize", resize);
 
-// Membuat tulisan membentuk hati
-function createHeart() {
-  words = [];
+// ==================================
+// BINTANG
+// ==================================
 
-  const scale = Math.min(W, H) / 36;
+function createStars() {
+  stars = [];
 
-  for (let i = 0; i < 350; i++) {
-
-    const t = Math.random() * Math.PI * 2;
-
-    const radius = Math.sqrt(Math.random());
-
-    const p = heart(t);
-
-    words.push({
-
+  for (let i = 0; i < 200; i++) {
+    stars.push({
       x: Math.random() * W,
       y: Math.random() * H,
-
-      tx: W / 2 + p.x * scale * radius,
-      ty: H / 2 - p.y * scale * radius,
-
-      size: Math.random() * 8 + 7,
-
-      speed: Math.random() * 0.025 + 0.008,
-
-      phase: Math.random() * 10,
-
-      text: Math.random() > 0.3
-        ? "I LOVE YOU"
-        : "love you",
-
-      color: Math.random() > 0.5
-        ? "#ff513d"
-        : "#ff9275"
+      size: random(0.4, 1.8),
+      phase: random(0, TWO_PI),
+      speed: random(0.005, 0.02)
     });
   }
 }
 
-// Animasi
-function animate(time) {
+function drawStars() {
+  for (const s of stars) {
+    const shine =
+      0.25 + Math.abs(Math.sin(time * s.speed + s.phase)) * 0.75;
 
-  ctx.fillStyle = "rgba(5,5,5,0.25)";
+    ctx.globalAlpha = shine;
+    ctx.fillStyle = "#c8efff";
+    ctx.shadowColor = "#45bbff";
+    ctx.shadowBlur = 9;
+
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.size, 0, TWO_PI);
+    ctx.fill();
+  }
+
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+}
+
+// ==================================
+// PARTIKEL BERKILAU
+// ==================================
+
+function createSparkles() {
+  sparkles = [];
+
+  for (let i = 0; i < 130; i++) {
+    sparkles.push({
+      x: random(0, W),
+      y: random(0, H),
+      size: random(0.8, 2.5),
+      speed: random(0.2, 0.8),
+      phase: random(0, TWO_PI)
+    });
+  }
+}
+
+function drawSparkles() {
+  for (const p of sparkles) {
+    p.y -= p.speed;
+
+    if (p.y < -10) {
+      p.y = H + 10;
+      p.x = random(0, W);
+    }
+
+    const alpha =
+      0.2 + Math.abs(Math.sin(time * 0.04 + p.phase)) * 0.8;
+
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = "#73d9ff";
+    ctx.shadowColor = "#00aaff";
+    ctx.shadowBlur = 12;
+    ctx.lineWidth = 1;
+
+    // Kilauan berbentuk bintang
+    ctx.beginPath();
+    ctx.moveTo(p.x - p.size * 2, p.y);
+    ctx.lineTo(p.x + p.size * 2, p.y);
+    ctx.moveTo(p.x, p.y - p.size * 2);
+    ctx.lineTo(p.x, p.y + p.size * 2);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * 0.6, 0, TWO_PI);
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+  }
+
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+}
+
+// ==================================
+// MEMBUAT SUSUNAN KATA I LOVE YOU
+// ==================================
+
+function createHeartWords() {
+  heartWords = [];
+
+  const scale = heartScale();
+  const font = textSize();
+
+  const rowGap = 2.8;
+
+  let index = 0;
+
+  // Setiap baris mengikuti lebar bentuk hati
+  for (let y = -16; y <= 16; y += rowGap) {
+    let left = Infinity;
+    let right = -Infinity;
+
+    // Mencari batas kiri dan kanan hati
+    for (let x = -17; x <= 17; x += 0.2) {
+      if (isInsideHeart(x, y)) {
+        left = Math.min(left, x);
+        right = Math.max(right, x);
+      }
+    }
+
+    if (left === Infinity) continue;
+
+    const widthInPixels = (right - left) * scale;
+
+    // Baris yang terlalu sempit tidak diberi tulisan
+    const count = Math.floor(widthInPixels / (font * 6.5));
+
+    if (count < 1) continue;
+
+    // Membuat kata-kata berada di tengah setiap baris
+    for (let i = 0; i < count; i++) {
+      const x = left + (i + 0.5) * (right - left) / count;
+
+      heartWords.push({
+        x: x,
+        y: y,
+        index: index,
+        delay: index * 13,
+        phase: random(0, TWO_PI)
+      });
+
+      index++;
+    }
+  }
+}
+
+// ==================================
+// LATAR BELAKANG
+// ==================================
+
+function drawBackground() {
+  const bg = ctx.createRadialGradient(
+    W / 2, H * 0.48, 0,
+    W / 2, H * 0.48, Math.max(W, H) * 0.8
+  );
+
+  bg.addColorStop(0, "#0a1c38");
+  bg.addColorStop(0.55, "#030a18");
+  bg.addColorStop(1, "#000000");
+
+  ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
+}
+
+// ==================================
+// CAHAYA BIRU
+// ==================================
+
+function drawBlueGlow() {
+  const pulse = 1 + Math.sin(time * 0.035) * 0.08;
+
+  ctx.save();
+  ctx.translate(W / 2, H * 0.5);
+  ctx.scale(pulse, pulse);
+
+  const glow = ctx.createRadialGradient(
+    0, 0, 0,
+    0, 0, Math.min(W, H) * 0.42
+  );
+
+  glow.addColorStop(0, "rgba(0,150,255,0.22)");
+  glow.addColorStop(0.5, "rgba(0,80,255,0.08)");
+  glow.addColorStop(1, "rgba(0,0,0,0)");
+
+  ctx.fillStyle = glow;
+  ctx.fillRect(-W / 2, -H / 2, W, H);
+
+  ctx.restore();
+}
+
+// ==================================
+// LAMPU SOROT BERGERAK
+// ==================================
+
+function drawSpotlights() {
+  ctx.save();
+  ctx.globalCompositeOperation = "screen";
+
+  for (let i = 0; i < 4; i++) {
+    const angle = time * 0.008 + i * 1.55;
+    const x = W / 2 + Math.sin(angle) * W * 0.4;
+
+    const beam = ctx.createLinearGradient(
+      x, 0,
+      W / 2, H
+    );
+
+    beam.addColorStop(0, "rgba(0,0,0,0)");
+    beam.addColorStop(0.5, "rgba(30,130,255,0.04)");
+    beam.addColorStop(1, "rgba(40,170,255,0.14)");
+
+    ctx.fillStyle = beam;
+
+    ctx.beginPath();
+    ctx.moveTo(x - 18, 0);
+    ctx.lineTo(x + 18, 0);
+    ctx.lineTo(W / 2 + W * 0.28, H);
+    ctx.lineTo(W / 2 - W * 0.28, H);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+// ==================================
+// NAMA FARHAN MUNCUL PERTAMA
+// ==================================
+
+function drawFarhan(elapsed) {
+  let alpha = 1;
+
+  // Nama mulai menghilang ketika hati terbentuk
+  if (elapsed > 2600) {
+    alpha = 1 - Math.min(1, (elapsed - 2600) / 900);
+  }
+
+  if (alpha <= 0) return;
+
+  const bounce = 1 + Math.sin(time * 0.07) * 0.025;
+
+  ctx.save();
+  ctx.translate(W / 2, H * 0.49);
+  ctx.scale(bounce, bounce);
+
+  ctx.globalAlpha = alpha;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  const size = Math.min(W * 0.13, 75);
+
+  ctx.font = `bold ${size}px Arial`;
+  ctx.fillStyle = "#ffffff";
+  ctx.shadowColor = "#00aaff";
+  ctx.shadowBlur = 25;
+
+  ctx.fillText("FARHAN", 0, 0);
+
+  // Kilauan tambahan
+  ctx.shadowBlur = 40;
+  ctx.strokeStyle = "rgba(100,220,255,0.8)";
+  ctx.lineWidth = 1;
+  ctx.strokeText("FARHAN", 0, 0);
+
+  ctx.restore();
+  ctx.globalAlpha = 1;
+}
+
+// ==================================
+// GARIS HATI BERCahaya
+// ==================================
+
+function drawHeartOutline() {
+  const scale = heartScale();
+  const centerX = W / 2;
+  const centerY = H * 0.51;
+
+  ctx.save();
+  ctx.beginPath();
+
+  heartOutline.forEach((p, i) => {
+    const x = centerX + p.x * scale;
+    const y = centerY - p.y * scale;
+
+    if (i === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+  });
+
+  ctx.closePath();
+
+  ctx.strokeStyle = "rgba(65,190,255,0.55)";
+  ctx.lineWidth = 1.5;
+  ctx.shadowColor = "#00aaff";
+  ctx.shadowBlur = 18;
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+// ==================================
+// KATA-KATA BERGERAK MEMBENTUK HATI
+// ==================================
+
+function drawHeartWords(elapsed) {
+  const scale = heartScale();
+  const centerX = W / 2;
+  const centerY = H * 0.51;
+
+  const font = textSize();
+
+  // Waktu mulai susunan hati
+  const assemblyTime = Math.max(0, elapsed - 2600);
+
+  heartWords.forEach((word, i) => {
+    // Setiap kata bergerak dengan jeda berbeda
+    let progress = (assemblyTime - word.delay) / 1800;
+
+    progress = Math.max(0, Math.min(1, progress));
+
+    // Gerakan lebih halus
+    const eased = 1 - Math.pow(1 - progress, 3);
+
+    if (progress <= 0) return;
+
+    const targetX = centerX + word.x * scale;
+    const targetY = centerY - word.y * scale;
+
+    // Awalnya semua kata berkumpul di tengah,
+    // kemudian bergerak menuju posisi masing-masing
+    const x = centerX + (targetX - centerX) * eased;
+    const y = centerY + (targetY - centerY) * eased;
+
+    const floating =
+      progress >= 1
+        ? Math.sin(time * 0.035 + word.phase) * 1.5
+        : 0;
+
+    const alpha = Math.min(1, progress * 1.7);
+
+    // Warna bergantian
+    const colors = [
+      "#ffffff",
+      "#83e5ff",
+      "#38baff",
+      "#b8edff"
+    ];
+
+    ctx.save();
+
+    ctx.globalAlpha = alpha;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = `bold ${font}px Arial`;
+
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.shadowColor = "#00aaff";
+    ctx.shadowBlur =
+      12 + Math.abs(Math.sin(time * 0.04 + word.phase)) * 16;
+
+    ctx.fillText(
+      "I LOVE YOU",
+      x,
+      y + floating
+    );
+
+    ctx.restore();
+  });
+}
+
+// ==================================
+// JUDUL SETELAH HATI TERBENTUK
+// ==================================
+
+function drawFinalMessage(elapsed) {
+  if (elapsed < 4500) return;
+
+  let alpha = Math.min(1, (elapsed - 4500) / 1500);
+
+  ctx.save();
+  ctx.globalAlpha = alpha;
+
+  ctx.textAlign = "center";
+  ctx.font = `bold ${Math.min(W * 0.045, 25)}px Arial`;
+
+  ctx.fillStyle = "#bceeff";
+  ctx.shadowColor = "#00aaff";
+  ctx.shadowBlur = 18;
+
+  ctx.fillText(
+    "FOR YOU, FARHAN ❤️",
+    W / 2,
+    H * 0.12
+  );
+
+  ctx.font = `${Math.min(W * 0.025, 14)}px Arial`;
+  ctx.fillStyle = "#82dfff";
+
+  ctx.fillText(
+    "YOU ARE MY FAVORITE PERSON",
+    W / 2,
+    H * 0.17
+  );
+
+  ctx.restore();
+}
+
+// ==================================
+// ANIMASI UTAMA
+// ==================================
+
+function animate() {
+  time++;
+
+  drawBackground();
+  drawStars();
 
   if (started) {
+    const elapsed = performance.now() - startTime;
 
-    words.forEach((w, i) => {
+    drawBlueGlow();
+    drawSpotlights();
+    drawSparkles();
 
-      const floatX =
-        Math.sin(time * 0.001 + w.phase) * 12;
+    if (elapsed < 5000) {
+      drawFarhan(elapsed);
+    }
 
-      const floatY =
-        Math.cos(time * 0.0015 + w.phase) * 10;
+    if (elapsed > 2600) {
+      drawHeartWords(elapsed);
+      drawHeartOutline();
+    }
 
-      w.x += (w.tx - w.x) * w.speed;
-      w.y += (w.ty - w.y) * w.speed;
-
-      ctx.save();
-
-      ctx.translate(
-        w.x + floatX,
-        w.y + floatY
-      );
-
-      ctx.font = `bold ${w.size}px Arial`;
-
-      ctx.fillStyle = w.color;
-
-      ctx.globalAlpha =
-        0.45 + Math.abs(Math.sin(time * 0.002 + i)) * 0.55;
-
-      ctx.shadowColor = "#ff3010";
-      ctx.shadowBlur = 8;
-
-      ctx.fillText(w.text, 0, 0);
-
-      ctx.restore();
-
-    });
+    drawFinalMessage(elapsed);
   }
 
   requestAnimationFrame(animate);
 }
 
-// Tombol buka
-async function startLove() {
+// ==================================
+// MULAI
+// ==================================
+
+function startShow() {
+  if (started) return;
 
   started = true;
+  startTime = performance.now();
 
-  document.getElementById("start").style.display = "none";
+  const intro = document.getElementById("intro");
 
-  try {
+  intro.style.opacity = "0";
 
-    await music.play();
-
-    musicPlaying = true;
-
-    document.getElementById("musicBtn").textContent =
-      "⏸ Pause Music";
-
-  } catch (error) {
-
-    document.getElementById("musicBtn").textContent =
-      "🎵 Play Music";
-
-  }
+  setTimeout(() => {
+    intro.style.display = "none";
+  }, 1500);
 }
 
-// Tombol musik
-async function toggleMusic() {
+// ==================================
+// UTILITAS
+// ==================================
 
-  if (musicPlaying) {
-
-    music.pause();
-
-    musicPlaying = false;
-
-    document.getElementById("musicBtn").textContent =
-      "🎵 Play Music";
-
-  } else {
-
-    try {
-
-      await music.play();
-
-      musicPlaying = true;
-
-      document.getElementById("musicBtn").textContent =
-        "⏸ Pause Music";
-
-    } catch (error) {
-
-      alert("Musik belum bisa diputar. Periksa file lagu di GitHub.");
-
-    }
-  }
+function random(min, max) {
+  return Math.random() * (max - min) + min;
 }
 
-// Mulai
 resize();
-
-requestAnimationFrame(animate);
-
+animate();
 </script>
 
 </body>
