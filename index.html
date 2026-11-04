@@ -4,7 +4,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>For Intan Sabana ❤️</title>
+
+<title>For Abang aan❤️</title>
 
 <style>
 * {
@@ -31,116 +32,88 @@ canvas {
   position: fixed;
   inset: 0;
   z-index: 10;
+  background: radial-gradient(circle, #071329, #000 75%);
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  gap: 20px;
-  background: radial-gradient(circle, #071329, #000 70%);
+  align-items: center;
+  gap: 22px;
+  text-align: center;
   transition: opacity 1.5s;
 }
 
 #intro h1 {
-  font-size: clamp(25px, 6vw, 48px);
-  color: #8bdcff;
-  text-shadow: 0 0 25px #008cff;
+  font-size: clamp(25px, 6vw, 45px);
+  color: #9eeaff;
+  text-shadow: 0 0 20px #008cff;
 }
 
 #intro p {
   color: #aaa;
-  text-align: center;
-  padding: 0 20px;
 }
 
 button {
-  padding: 14px 30px;
-  border: 1px solid #65caff;
+  padding: 14px 28px;
   border-radius: 40px;
+  border: 1px solid #00aaff;
   background: #061a35;
-  color: #fff;
-  font-size: 16px;
+  color: white;
+  font-size: 15px;
   cursor: pointer;
-  box-shadow: 0 0 20px #0077ff55;
-}
-
-button:hover {
-  background: #073b70;
-  box-shadow: 0 0 35px #00aaff;
+  box-shadow: 0 0 20px #008cff55;
 }
 
 #musicButton {
   position: fixed;
-  right: 18px;
+  right: 15px;
   bottom: 18px;
   z-index: 8;
   font-size: 12px;
-  padding: 10px 18px;
 }
 
 #title {
   position: fixed;
-  top: 8%;
-  left: 0;
+  top: 9%;
   width: 100%;
   text-align: center;
-  font-size: clamp(20px, 4vw, 36px);
-  color: #b8eaff;
+  color: #b9edff;
+  font-size: clamp(20px, 5vw, 38px);
   letter-spacing: 4px;
+  text-shadow: 0 0 15px #008cff;
   opacity: 0;
-  text-shadow:
-    0 0 10px #00aaff,
-    0 0 30px #0066ff;
   transition: opacity 2s;
   pointer-events: none;
 }
 
 #subtitle {
   position: fixed;
-  top: 16%;
+  top: 17%;
   width: 100%;
   text-align: center;
+  color: #66bfff;
   font-size: 12px;
   letter-spacing: 3px;
-  color: #6ebaff;
   opacity: 0;
   transition: opacity 2s;
   pointer-events: none;
 }
 
-#title.show,
-#subtitle.show {
-  opacity: 1;
-}
-
 #message {
   position: fixed;
-  bottom: 13%;
+  bottom: 12%;
   width: 100%;
   text-align: center;
-  font-size: clamp(13px, 3vw, 20px);
-  letter-spacing: 2px;
   color: #b9eaff;
+  font-size: clamp(14px, 3vw, 20px);
   text-shadow: 0 0 15px #008cff;
   opacity: 0;
   transition: opacity 3s;
   pointer-events: none;
 }
 
-#message.show {
-  opacity: 1;
+.show {
+  opacity: 1 !important;
 }
-
-#hint {
-  position: fixed;
-  bottom: 5%;
-  width: 100%;
-  text-align: center;
-  font-size: 10px;
-  color: #526c90;
-  letter-spacing: 2px;
-  pointer-events: none;
-}
-
 </style>
 </head>
 
@@ -149,25 +122,21 @@ button:hover {
 <canvas id="canvas"></canvas>
 
 <div id="intro">
-  <h1>FOR INTAN SABANA ❤️</h1>
+  <h1>FOR MY ABANG ❤️</h1>
   <p>A little universe made just for you...</p>
-  <button onclick="startExperience()">OPEN YOUR HEART ❤️</button>
+  <button onclick="startLove()">OPEN YOUR HEART ❤️</button>
 </div>
 
-<div id="title">INTAN SABANA</div>
+<div id="title">I LOVE YOU ABANG</div>
 
 <div id="subtitle">
-  YOU ARE MY FAVORITE UNIVERSE ✨
+  YOU ARE MY FAVORITE PERSON 💙
 </div>
 
 <div id="message">
-  I LOVE YOU ❤️
+  I LOVE YOU, ABANG ❤️
   <br><br>
-  You make my world brighter.
-</div>
-
-<div id="hint">
-  MADE WITH LOVE ❤️
+  You make my world brighter ✨
 </div>
 
 <button id="musicButton" onclick="toggleMusic()">
@@ -175,469 +144,263 @@ button:hover {
 </button>
 
 <audio id="music" loop preload="auto">
-  <source
-    src="Tulus_-_Jatuh_Suka_(mp3.pm).aac"
-    type="audio/aac">
+  <source src="Tulus_-_Jatuh_Suka_(mp3.pm).aac" type="audio/aac">
 </audio>
 
 <script>
-
-// ==================================================
-// CANVAS
-// ==================================================
-
 const canvas = document.getElementById("canvas");
-
 const ctx = canvas.getContext("2d");
 
 const music = document.getElementById("music");
 
-let W = window.innerWidth;
-let H = window.innerHeight;
-
+let W, H;
+let time = 0;
 let started = false;
 let musicPlaying = false;
 
-let heartParticles = [];
+let hearts = [];
 let blueParticles = [];
-let backgroundStars = [];
+let stars = [];
 let orbitParticles = [];
-let sparkParticles = [];
-
-let time = 0;
-
-let mouse = {
-  x: W / 2,
-  y: H / 2
-};
 
 const TWO_PI = Math.PI * 2;
 
+// =============================
+// HEART SHAPE
+// =============================
 
-// ==================================================
-// CONFIGURATION
-// ==================================================
+function heart(t) {
+  return {
+    x: 16 * Math.pow(Math.sin(t), 3),
 
-const CONFIG = {
+    y:
+      13 * Math.cos(t)
+      - 5 * Math.cos(2 * t)
+      - 2 * Math.cos(3 * t)
+      - Math.cos(4 * t)
+  };
+}
 
-  heartCount: 3200,
+// =============================
+// RANDOM
+// =============================
 
-  blueCount: 650,
+function random(min, max) {
+  return Math.random() * (max - min) + min;
+}
 
-  starCount: 220,
-
-  orbitCount: 180,
-
-  sparkCount: 180,
-
-  heartColor: "#ffffff",
-
-  blueColor: "#00aaff",
-
-  rotationSpeed: 0.00035,
-
-  pulseSpeed: 0.003,
-
-  particleSpeed: 0.035
-
-};
-
-
-// ==================================================
+// =============================
 // RESIZE
-// ==================================================
+// =============================
 
 function resize() {
-
   W = window.innerWidth;
-
   H = window.innerHeight;
 
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
   canvas.width = W * dpr;
-
   canvas.height = H * dpr;
 
   canvas.style.width = W + "px";
-
   canvas.style.height = H + "px";
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   createScene();
-
 }
 
 window.addEventListener("resize", resize);
 
+// =============================
+// CREATE HEART
+// =============================
 
-// ==================================================
-// RANDOM
-// ==================================================
-
-function random(min, max) {
-
-  return Math.random() * (max - min) + min;
-
-}
-
-
-// ==================================================
-// HEART MATHEMATICS
-// ==================================================
-
-function heartShape(t) {
-
-  const x = 16 * Math.pow(Math.sin(t), 3);
-
-  const y =
-    13 * Math.cos(t)
-    - 5 * Math.cos(2 * t)
-    - 2 * Math.cos(3 * t)
-    - Math.cos(4 * t);
-
-  return { x, y };
-
-}
-
-
-// ==================================================
-// HEART PARTICLE CREATION
-// ==================================================
-
-function createHeartParticles() {
-
-  heartParticles = [];
+function createHeart() {
+  hearts = [];
 
   const scale = Math.min(W, H) * 0.021;
 
-  for (let i = 0; i < CONFIG.heartCount; i++) {
-
-    const angle = random(0, TWO_PI);
+  for (let i = 0; i < 2600; i++) {
+    const t = random(0, TWO_PI);
 
     const radius = Math.sqrt(Math.random());
 
-    const heart = heartShape(angle);
+    const p = heart(t);
 
-    const tx = heart.x * scale * radius;
-
-    const ty = -heart.y * scale * radius;
-
-    const depth = random(-1, 1);
-
-    heartParticles.push({
-
+    hearts.push({
       x: random(-W, W),
-
       y: random(-H, H),
 
-      z: depth,
+      tx: p.x * scale * radius,
+      ty: -p.y * scale * radius,
 
-      tx,
+      tz: random(-1, 1),
 
-      ty,
-
-      tz: depth,
-
-      size: random(0.35, 1.7),
+      size: random(0.4, 1.7),
 
       speed: random(0.008, 0.035),
 
       phase: random(0, TWO_PI),
 
-      shimmer: random(0.5, 1),
-
-      color: Math.random() > 0.35
-        ? "#d8f3ff"
-        : "#ffffff"
-
+      color: Math.random() > 0.4
+        ? "#ffffff"
+        : "#a5e8ff"
     });
-
   }
-
 }
 
-
-// ==================================================
+// =============================
 // BLUE PARTICLES
-// ==================================================
+// =============================
 
 function createBlueParticles() {
-
   blueParticles = [];
 
-  for (let i = 0; i < CONFIG.blueCount; i++) {
-
+  for (let i = 0; i < 600; i++) {
     blueParticles.push({
-
       angle: random(0, TWO_PI),
-
-      radius: random(0.2, 1),
-
-      height: random(-1, 1),
-
-      speed: random(0.001, 0.009),
-
-      size: random(0.5, 2.4),
-
-      phase: random(0, TWO_PI),
-
-      alpha: random(0.3, 1)
-
+      radius: random(0.3, 1.5),
+      speed: random(0.001, 0.008),
+      size: random(0.5, 2),
+      phase: random(0, TWO_PI)
     });
-
   }
-
 }
 
+// =============================
+// ORBIT
+// =============================
 
-// ==================================================
-// ORBIT PARTICLES
-// ==================================================
-
-function createOrbitParticles() {
-
+function createOrbit() {
   orbitParticles = [];
 
-  for (let i = 0; i < CONFIG.orbitCount; i++) {
-
+  for (let i = 0; i < 150; i++) {
     orbitParticles.push({
-
       angle: random(0, TWO_PI),
-
-      radius: random(0.75, 1.55),
-
+      radius: random(0.8, 1.6),
       speed: random(0.001, 0.004),
-
-      size: random(0.4, 1.6),
-
-      phase: random(0, TWO_PI),
-
+      size: random(0.5, 1.5),
       color: Math.random() > 0.5
         ? "#00aaff"
-        : "#6ceaff"
-
+        : "#75eaff"
     });
-
   }
-
 }
 
-
-// ==================================================
-// BACKGROUND STARS
-// ==================================================
+// =============================
+// STARS
+// =============================
 
 function createStars() {
+  stars = [];
 
-  backgroundStars = [];
-
-  for (let i = 0; i < CONFIG.starCount; i++) {
-
-    backgroundStars.push({
-
+  for (let i = 0; i < 180; i++) {
+    stars.push({
       x: random(0, W),
-
       y: random(0, H),
-
       size: random(0.3, 1.5),
-
-      alpha: random(0.2, 1),
-
-      phase: random(0, TWO_PI),
-
-      speed: random(0.05, 0.3)
-
+      phase: random(0, TWO_PI)
     });
-
   }
-
 }
 
-
-// ==================================================
-// SPARKS
-// ==================================================
-
-function createSparks() {
-
-  sparkParticles = [];
-
-  for (let i = 0; i < CONFIG.sparkCount; i++) {
-
-    sparkParticles.push({
-
-      x: random(0, W),
-
-      y: random(0, H),
-
-      vx: random(-0.5, 0.5),
-
-      vy: random(-1.5, -0.1),
-
-      size: random(0.5, 2),
-
-      alpha: random(0.2, 1),
-
-      life: random(0.2, 1)
-
-    });
-
-  }
-
-}
-
-
-// ==================================================
+// =============================
 // CREATE SCENE
-// ==================================================
+// =============================
 
 function createScene() {
-
-  createHeartParticles();
-
+  createHeart();
   createBlueParticles();
-
-  createOrbitParticles();
-
+  createOrbit();
   createStars();
-
-  createSparks();
-
 }
 
-
-// ==================================================
-// 3D HEART ROTATION
-// ==================================================
+// =============================
+// 3D ROTATION
+// =============================
 
 function rotate3D(x, y, z, angleY, angleX) {
+  const x1 = x * Math.cos(angleY) - z * Math.sin(angleY);
 
-  // Rotation Y
-  const x1 =
-    x * Math.cos(angleY)
-    - z * Math.sin(angleY);
+  const z1 = x * Math.sin(angleY) + z * Math.cos(angleY);
 
-  const z1 =
-    x * Math.sin(angleY)
-    + z * Math.cos(angleY);
+  const y2 = y * Math.cos(angleX) - z1 * Math.sin(angleX);
 
-  // Rotation X
-  const y2 =
-    y * Math.cos(angleX)
-    - z1 * Math.sin(angleX);
-
-  const z2 =
-    y * Math.sin(angleX)
-    + z1 * Math.cos(angleX);
+  const z2 = y * Math.sin(angleX) + z1 * Math.cos(angleX);
 
   return {
     x: x1,
     y: y2,
     z: z2
   };
-
 }
 
+// =============================
+// PROJECTION
+// =============================
 
-// ==================================================
-// 3D PROJECTION
-// ==================================================
-
-function project(point, scale) {
-
+function project(p, scale) {
   const perspective = 500;
 
-  const depth = perspective / (perspective + point.z * 100);
+  const depth = perspective / (perspective + p.z * 100);
 
   return {
-
-    x: W / 2 + point.x * scale * depth,
-
-    y: H * 0.46 + point.y * scale * depth,
-
+    x: W / 2 + p.x * scale * depth,
+    y: H * 0.46 + p.y * scale * depth,
     depth
-
   };
-
 }
 
-
-// ==================================================
-// DRAW BACKGROUND
-// ==================================================
+// =============================
+// BACKGROUND
+// =============================
 
 function drawBackground() {
-
   const gradient = ctx.createRadialGradient(
     W / 2,
     H * 0.45,
     0,
     W / 2,
     H * 0.45,
-    Math.max(W, H) * 0.75
+    Math.max(W, H) * 0.8
   );
 
   gradient.addColorStop(0, "#07101d");
-
-  gradient.addColorStop(0.45, "#020711");
-
+  gradient.addColorStop(0.5, "#020711");
   gradient.addColorStop(1, "#000000");
 
   ctx.fillStyle = gradient;
-
   ctx.fillRect(0, 0, W, H);
-
 }
 
-
-// ==================================================
-// DRAW STARS
-// ==================================================
+// =============================
+// STARS
+// =============================
 
 function drawStars() {
-
-  for (const star of backgroundStars) {
-
-    const flicker =
-      0.3 + Math.abs(Math.sin(time * 0.002 + star.phase)) * 0.7;
-
-    ctx.globalAlpha = star.alpha * flicker;
+  for (const s of stars) {
+    ctx.globalAlpha =
+      0.2 + Math.abs(Math.sin(time * 0.003 + s.phase)) * 0.8;
 
     ctx.fillStyle = "#bdeaff";
 
-    ctx.fillRect(
-      star.x,
-      star.y,
-      star.size,
-      star.size
-    );
-
+    ctx.fillRect(s.x, s.y, s.size, s.size);
   }
 
   ctx.globalAlpha = 1;
-
 }
 
+// =============================
+// BLUE GLOW
+// =============================
 
-// ==================================================
-// BLUE LIGHT GLOW
-// ==================================================
-
-function drawBlueGlow() {
-
-  const pulse =
-    1 + Math.sin(time * CONFIG.pulseSpeed) * 0.1;
-
-  const x = W / 2;
-
-  const y = H * 0.75;
+function drawGlow() {
+  const pulse = 1 + Math.sin(time * 0.003) * 0.1;
 
   ctx.save();
 
-  ctx.translate(x, y);
-
+  ctx.translate(W / 2, H * 0.75);
   ctx.scale(pulse, 1);
 
   const glow = ctx.createRadialGradient(
@@ -646,172 +409,81 @@ function drawBlueGlow() {
   );
 
   glow.addColorStop(0, "rgba(0,180,255,0.7)");
-
-  glow.addColorStop(0.15, "rgba(0,110,255,0.3)");
-
-  glow.addColorStop(0.5, "rgba(0,50,255,0.08)");
-
+  glow.addColorStop(0.2, "rgba(0,110,255,0.3)");
   glow.addColorStop(1, "rgba(0,0,0,0)");
 
   ctx.fillStyle = glow;
-
-  ctx.fillRect(
-    -W / 2,
-    -H / 2,
-    W,
-    H
-  );
+  ctx.fillRect(-W / 2, -H / 2, W, H);
 
   ctx.restore();
-
 }
 
-
-// ==================================================
+// =============================
 // MOVING SPOTLIGHT
-// ==================================================
+// =============================
 
 function drawSpotlight() {
-
   const angle = time * 0.0007;
 
-  const lightX =
-    W / 2 + Math.sin(angle) * W * 0.35;
+  const x = W / 2 + Math.sin(angle) * W * 0.35;
 
-  const lightY =
-    H * 0.25 + Math.cos(angle * 0.7) * H * 0.1;
+  const y = H * 0.12;
 
   ctx.save();
 
   ctx.globalCompositeOperation = "screen";
 
-  // Lamp beam
   const beam = ctx.createLinearGradient(
-    lightX,
-    lightY,
-    W / 2,
-    H * 0.75
+    x, y,
+    W / 2, H
   );
 
-  beam.addColorStop(0, "rgba(80,180,255,0.0)");
-
-  beam.addColorStop(0.4, "rgba(70,160,255,0.035)");
-
-  beam.addColorStop(1, "rgba(0,100,255,0.13)");
+  beam.addColorStop(0, "rgba(0,0,0,0)");
+  beam.addColorStop(0.5, "rgba(50,150,255,0.04)");
+  beam.addColorStop(1, "rgba(50,180,255,0.13)");
 
   ctx.fillStyle = beam;
 
   ctx.beginPath();
 
-  ctx.moveTo(lightX - 25, lightY);
-
-  ctx.lineTo(lightX + 25, lightY);
-
+  ctx.moveTo(x - 20, y);
+  ctx.lineTo(x + 20, y);
   ctx.lineTo(W / 2 + W * 0.3, H);
-
   ctx.lineTo(W / 2 - W * 0.3, H);
 
   ctx.closePath();
-
   ctx.fill();
 
-  // Spotlight
-  const spotlight = ctx.createRadialGradient(
-    lightX,
-    lightY,
-    0,
-    lightX,
-    lightY,
-    Math.min(W, H) * 0.35
+  const light = ctx.createRadialGradient(
+    x, y, 0,
+    x, y, Math.min(W, H) * 0.3
   );
 
-  spotlight.addColorStop(0, "rgba(130,220,255,0.16)");
+  light.addColorStop(0, "rgba(100,200,255,0.15)");
+  light.addColorStop(1, "rgba(0,0,0,0)");
 
-  spotlight.addColorStop(0.25, "rgba(40,140,255,0.07)");
-
-  spotlight.addColorStop(1, "rgba(0,0,0,0)");
-
-  ctx.fillStyle = spotlight;
-
+  ctx.fillStyle = light;
   ctx.fillRect(0, 0, W, H);
 
   ctx.restore();
-
 }
 
-
-// ==================================================
-// SECOND SPOTLIGHT
-// ==================================================
-
-function drawSecondSpotlight() {
-
-  const angle = time * 0.00045 + Math.PI;
-
-  const lightX =
-    W / 2 + Math.sin(angle) * W * 0.4;
-
-  const lightY = H * 0.12;
-
-  ctx.save();
-
-  ctx.globalCompositeOperation = "screen";
-
-  const gradient = ctx.createLinearGradient(
-    lightX,
-    lightY,
-    W / 2,
-    H * 0.65
-  );
-
-  gradient.addColorStop(0, "rgba(0,0,0,0)");
-
-  gradient.addColorStop(0.5, "rgba(70,130,255,0.04)");
-
-  gradient.addColorStop(1, "rgba(70,190,255,0.1)");
-
-  ctx.fillStyle = gradient;
-
-  ctx.beginPath();
-
-  ctx.moveTo(lightX - 15, lightY);
-
-  ctx.lineTo(lightX + 15, lightY);
-
-  ctx.lineTo(W / 2 + W * 0.2, H);
-
-  ctx.lineTo(W / 2 - W * 0.2, H);
-
-  ctx.closePath();
-
-  ctx.fill();
-
-  ctx.restore();
-
-}
-
-
-// ==================================================
+// =============================
 // DRAW HEART PARTICLES
-// ==================================================
+// =============================
 
 function drawHeart() {
-
   const scale = Math.min(W, H) * 0.021;
 
-  const angleY = time * CONFIG.rotationSpeed;
+  const angleY = time * 0.0007;
 
-  const angleX =
-    Math.sin(time * 0.0004) * 0.25;
+  const angleX = Math.sin(time * 0.0004) * 0.25;
 
-  const pulse =
-    1 + Math.sin(time * CONFIG.pulseSpeed) * 0.035;
+  const pulse = 1 + Math.sin(time * 0.003) * 0.04;
 
-  // Sort depth for 3D effect
   const projected = [];
 
-  for (const p of heartParticles) {
-
+  for (const p of hearts) {
     const rotated = rotate3D(
       p.tx,
       p.ty,
@@ -826,10 +498,8 @@ function drawHeart() {
       ...point,
       size: p.size,
       color: p.color,
-      phase: p.phase,
-      shimmer: p.shimmer
+      phase: p.phase
     });
-
   }
 
   projected.sort((a, b) => a.depth - b.depth);
@@ -839,17 +509,13 @@ function drawHeart() {
   ctx.globalCompositeOperation = "screen";
 
   for (const p of projected) {
-
-    const flicker =
-      0.35 + Math.abs(Math.sin(time * 0.004 + p.phase)) * 0.65;
-
-    ctx.globalAlpha = flicker;
+    ctx.globalAlpha =
+      0.4 + Math.abs(Math.sin(time * 0.004 + p.phase)) * 0.6;
 
     ctx.fillStyle = p.color;
 
     ctx.shadowColor = "#6acbff";
-
-    ctx.shadowBlur = 5 * p.depth;
+    ctx.shadowBlur = 5;
 
     ctx.beginPath();
 
@@ -862,267 +528,90 @@ function drawHeart() {
     );
 
     ctx.fill();
-
   }
 
   ctx.restore();
-
 }
 
-
-// ==================================================
-// BLUE PARTICLES MOVING AROUND HEART
-// ==================================================
+// =============================
+// BLUE PARTICLES
+// =============================
 
 function drawBlueParticles() {
-
-  const scale = Math.min(W, H);
-
   ctx.save();
 
   ctx.globalCompositeOperation = "screen";
 
   for (const p of blueParticles) {
-
     p.angle += p.speed;
 
-    const radius =
-      p.radius * scale * 0.27;
+    const radius = p.radius * Math.min(W, H) * 0.25;
 
-    const x =
-      W / 2
-      + Math.cos(p.angle) * radius;
+    const x = W / 2 + Math.cos(p.angle) * radius;
 
-    const y =
-      H * 0.46
-      + Math.sin(p.angle * 1.3 + p.phase)
-      * radius * 0.65;
-
-    const z =
-      Math.sin(p.angle + p.phase);
-
-    const size =
-      p.size * (1 + z * 0.3);
+    const y = H * 0.46 +
+      Math.sin(p.angle * 1.3 + p.phase) * radius * 0.6;
 
     ctx.globalAlpha =
-      p.alpha * (0.4 + Math.abs(z) * 0.6);
+      0.4 + Math.abs(Math.sin(p.angle)) * 0.6;
 
     ctx.fillStyle = "#00aaff";
 
     ctx.shadowColor = "#00aaff";
-
     ctx.shadowBlur = 15;
 
     ctx.beginPath();
 
-    ctx.arc(
-      x,
-      y,
-      Math.max(0.2, size),
-      0,
-      TWO_PI
-    );
+    ctx.arc(x, y, p.size, 0, TWO_PI);
 
     ctx.fill();
-
   }
 
   ctx.restore();
-
 }
 
+// =============================
+// ORBITING PARTICLES
+// =============================
 
-// ==================================================
-// ORBITING BLUE RINGS
-// ==================================================
-
-function drawOrbitParticles() {
-
-  const scale = Math.min(W, H);
-
+function drawOrbit() {
   ctx.save();
 
   ctx.globalCompositeOperation = "screen";
 
   for (const p of orbitParticles) {
-
     p.angle += p.speed;
 
-    const radius =
-      p.radius * scale * 0.2;
+    const radius = p.radius * Math.min(W, H) * 0.2;
 
-    const x =
-      W / 2
-      + Math.cos(p.angle) * radius;
+    const x = W / 2 + Math.cos(p.angle) * radius;
 
-    const y =
-      H * 0.46
-      + Math.sin(p.angle) * radius * 0.5;
-
-    const z =
-      Math.cos(p.angle * 2);
+    const y = H * 0.46 +
+      Math.sin(p.angle) * radius * 0.5;
 
     ctx.globalAlpha =
-      0.35 + Math.abs(z) * 0.65;
+      0.4 + Math.abs(Math.sin(p.angle)) * 0.6;
 
     ctx.fillStyle = p.color;
 
     ctx.shadowColor = "#00aaff";
-
-    ctx.shadowBlur = 10;
-
-    ctx.beginPath();
-
-    ctx.arc(
-      x,
-      y,
-      p.size,
-      0,
-      TWO_PI
-    );
-
-    ctx.fill();
-
-  }
-
-  ctx.restore();
-
-}
-
-
-// ==================================================
-// FLOATING SPARKS
-// ==================================================
-
-function drawSparks() {
-
-  ctx.save();
-
-  ctx.globalCompositeOperation = "screen";
-
-  for (const p of sparkParticles) {
-
-    p.x += p.vx;
-
-    p.y += p.vy;
-
-    p.life -= 0.002;
-
-    if (p.y < 0 || p.life <= 0) {
-
-      p.x = random(0, W);
-
-      p.y = H + random(0, 50);
-
-      p.vy = random(-1.5, -0.1);
-
-      p.life = random(0.5, 1);
-
-    }
-
-    ctx.globalAlpha = p.alpha * p.life;
-
-    ctx.fillStyle = "#64caff";
-
-    ctx.shadowColor = "#00aaff";
-
     ctx.shadowBlur = 12;
 
     ctx.beginPath();
 
-    ctx.arc(
-      p.x,
-      p.y,
-      p.size,
-      0,
-      TWO_PI
-    );
+    ctx.arc(x, y, p.size, 0, TWO_PI);
 
     ctx.fill();
-
   }
 
   ctx.restore();
-
 }
 
-
-// ==================================================
-// HEART OUTLINE GLOW
-// ==================================================
-
-function drawHeartOutline() {
-
-  const scale = Math.min(W, H) * 0.021;
-
-  const angleY = time * CONFIG.rotationSpeed;
-
-  const pulse =
-    1 + Math.sin(time * CONFIG.pulseSpeed) * 0.035;
-
-  ctx.save();
-
-  ctx.translate(W / 2, H * 0.46);
-
-  ctx.rotate(Math.sin(time * 0.0004) * 0.08);
-
-  ctx.scale(pulse, pulse);
-
-  ctx.beginPath();
-
-  for (let i = 0; i <= 240; i++) {
-
-    const t = i / 240 * TWO_PI;
-
-    const p = heartShape(t);
-
-    const rotated = rotate3D(
-      p.x * scale,
-      -p.y * scale,
-      0,
-      angleY,
-      0
-    );
-
-    const x = rotated.x;
-
-    const y = rotated.y;
-
-    if (i === 0) {
-
-      ctx.moveTo(x, y);
-
-    } else {
-
-      ctx.lineTo(x, y);
-
-    }
-
-  }
-
-  ctx.closePath();
-
-  ctx.strokeStyle = "rgba(50,160,255,0.2)";
-
-  ctx.lineWidth = 1;
-
-  ctx.shadowColor = "#0088ff";
-
-  ctx.shadowBlur = 20;
-
-  ctx.stroke();
-
-  ctx.restore();
-
-}
-
-
-// ==================================================
+// =============================
 // MAIN ANIMATION
-// ==================================================
+// =============================
 
 function animate() {
-
   time++;
 
   drawBackground();
@@ -1130,36 +619,21 @@ function animate() {
   drawStars();
 
   if (started) {
-
-    drawBlueGlow();
-
+    drawGlow();
     drawSpotlight();
-
-    drawSecondSpotlight();
-
     drawBlueParticles();
-
-    drawOrbitParticles();
-
-    drawHeartOutline();
-
+    drawOrbit();
     drawHeart();
-
-    drawSparks();
-
   }
 
   requestAnimationFrame(animate);
-
 }
 
+// =============================
+// START
+// =============================
 
-// ==================================================
-// START EXPERIENCE
-// ==================================================
-
-async function startExperience() {
-
+async function startLove() {
   started = true;
 
   const intro = document.getElementById("intro");
@@ -1167,9 +641,7 @@ async function startExperience() {
   intro.style.opacity = "0";
 
   setTimeout(() => {
-
     intro.style.display = "none";
-
   }, 1500);
 
   document.getElementById("title").classList.add("show");
@@ -1177,13 +649,10 @@ async function startExperience() {
   document.getElementById("subtitle").classList.add("show");
 
   setTimeout(() => {
-
     document.getElementById("message").classList.add("show");
-
-  }, 5000);
+  }, 4000);
 
   try {
-
     await music.play();
 
     musicPlaying = true;
@@ -1192,23 +661,17 @@ async function startExperience() {
       "⏸ PAUSE MUSIC";
 
   } catch (error) {
-
     document.getElementById("musicButton").textContent =
       "🎵 PLAY MUSIC";
-
   }
-
 }
 
-
-// ==================================================
-// MUSIC BUTTON
-// ==================================================
+// =============================
+// MUSIC
+// =============================
 
 async function toggleMusic() {
-
   if (musicPlaying) {
-
     music.pause();
 
     musicPlaying = false;
@@ -1217,9 +680,7 @@ async function toggleMusic() {
       "🎵 PLAY MUSIC";
 
   } else {
-
     try {
-
       await music.play();
 
       musicPlaying = true;
@@ -1228,19 +689,14 @@ async function toggleMusic() {
         "⏸ PAUSE MUSIC";
 
     } catch (error) {
-
       alert("Musik belum bisa diputar. Periksa file audio.");
-
     }
-
   }
-
 }
 
-
-// ==================================================
-// INITIALIZATION
-// ==================================================
+// =============================
+// INITIALIZE
+// =============================
 
 resize();
 
