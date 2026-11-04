@@ -4,8 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>For You ❤️</title>
+<title>For Intan Sabana ❤️</title>
 
 <style>
 * {
@@ -15,62 +14,133 @@
 }
 
 body {
-  background: #050505;
-  color: white;
+  background: #000;
   overflow: hidden;
   font-family: Arial, sans-serif;
+  color: white;
 }
 
 canvas {
-  display: block;
-  width: 100vw;
-  height: 100vh;
-}
-
-#start {
   position: fixed;
   inset: 0;
-  z-index: 5;
-  background: #050505;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  text-align: center;
+  width: 100%;
+  height: 100%;
 }
 
-#start h1 {
-  color: #ff604d;
-  font-size: 30px;
+#intro {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: radial-gradient(circle, #071329, #000 70%);
+  transition: opacity 1.5s;
+}
+
+#intro h1 {
+  font-size: clamp(25px, 6vw, 48px);
+  color: #8bdcff;
+  text-shadow: 0 0 25px #008cff;
+}
+
+#intro p {
+  color: #aaa;
+  text-align: center;
+  padding: 0 20px;
 }
 
 button {
-  background: #ff3d50;
-  color: white;
-  border: none;
-  padding: 14px 25px;
-  border-radius: 30px;
+  padding: 14px 30px;
+  border: 1px solid #65caff;
+  border-radius: 40px;
+  background: #061a35;
+  color: #fff;
   font-size: 16px;
   cursor: pointer;
+  box-shadow: 0 0 20px #0077ff55;
 }
 
-#musicBtn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 4;
+button:hover {
+  background: #073b70;
+  box-shadow: 0 0 35px #00aaff;
 }
 
-#caption {
+#musicButton {
   position: fixed;
-  bottom: 25px;
+  right: 18px;
+  bottom: 18px;
+  z-index: 8;
+  font-size: 12px;
+  padding: 10px 18px;
+}
+
+#title {
+  position: fixed;
+  top: 8%;
+  left: 0;
   width: 100%;
   text-align: center;
-  color: #ff7969;
-  font-size: 14px;
+  font-size: clamp(20px, 4vw, 36px);
+  color: #b8eaff;
+  letter-spacing: 4px;
+  opacity: 0;
+  text-shadow:
+    0 0 10px #00aaff,
+    0 0 30px #0066ff;
+  transition: opacity 2s;
   pointer-events: none;
 }
+
+#subtitle {
+  position: fixed;
+  top: 16%;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: #6ebaff;
+  opacity: 0;
+  transition: opacity 2s;
+  pointer-events: none;
+}
+
+#title.show,
+#subtitle.show {
+  opacity: 1;
+}
+
+#message {
+  position: fixed;
+  bottom: 13%;
+  width: 100%;
+  text-align: center;
+  font-size: clamp(13px, 3vw, 20px);
+  letter-spacing: 2px;
+  color: #b9eaff;
+  text-shadow: 0 0 15px #008cff;
+  opacity: 0;
+  transition: opacity 3s;
+  pointer-events: none;
+}
+
+#message.show {
+  opacity: 1;
+}
+
+#hint {
+  position: fixed;
+  bottom: 5%;
+  width: 100%;
+  text-align: center;
+  font-size: 10px;
+  color: #526c90;
+  letter-spacing: 2px;
+  pointer-events: none;
+}
+
 </style>
 </head>
 
@@ -78,146 +148,1039 @@ button {
 
 <canvas id="canvas"></canvas>
 
-<div id="start">
-  <h1>For Someone Special ❤️</h1>
-  <p>Ada sesuatu untuk kamu...</p>
-  <button onclick="startLove()">Buka ❤️</button>
+<div id="intro">
+  <h1>FOR INTAN SABANA ❤️</h1>
+  <p>A little universe made just for you...</p>
+  <button onclick="startExperience()">OPEN YOUR HEART ❤️</button>
 </div>
 
-<button id="musicBtn" onclick="toggleMusic()">
-  🎵 Play Music
+<div id="title">INTAN SABANA</div>
+
+<div id="subtitle">
+  YOU ARE MY FAVORITE UNIVERSE ✨
+</div>
+
+<div id="message">
+  I LOVE YOU ❤️
+  <br><br>
+  You make my world brighter.
+</div>
+
+<div id="hint">
+  MADE WITH LOVE ❤️
+</div>
+
+<button id="musicButton" onclick="toggleMusic()">
+  🎵 PLAY MUSIC
 </button>
 
-<div id="caption">I LOVE YOU ❤️</div>
-
 <audio id="music" loop preload="auto">
-  <source src="Tulus_-_Jatuh_Suka_(mp3.pm).aac" type="audio/aac">
+  <source
+    src="Tulus_-_Jatuh_Suka_(mp3.pm).aac"
+    type="audio/aac">
 </audio>
 
 <script>
+
+// ==================================================
+// CANVAS
+// ==================================================
+
 const canvas = document.getElementById("canvas");
+
 const ctx = canvas.getContext("2d");
 
 const music = document.getElementById("music");
 
-let W, H;
-let words = [];
+let W = window.innerWidth;
+let H = window.innerHeight;
+
 let started = false;
 let musicPlaying = false;
 
-// Bentuk hati
-function heart(t) {
-  return {
-    x: 16 * Math.pow(Math.sin(t), 3),
+let heartParticles = [];
+let blueParticles = [];
+let backgroundStars = [];
+let orbitParticles = [];
+let sparkParticles = [];
 
-    y: 13 * Math.cos(t)
-      - 5 * Math.cos(2 * t)
-      - 2 * Math.cos(3 * t)
-      - Math.cos(4 * t)
-  };
-}
+let time = 0;
 
-// Ukuran layar
+let mouse = {
+  x: W / 2,
+  y: H / 2
+};
+
+const TWO_PI = Math.PI * 2;
+
+
+// ==================================================
+// CONFIGURATION
+// ==================================================
+
+const CONFIG = {
+
+  heartCount: 3200,
+
+  blueCount: 650,
+
+  starCount: 220,
+
+  orbitCount: 180,
+
+  sparkCount: 180,
+
+  heartColor: "#ffffff",
+
+  blueColor: "#00aaff",
+
+  rotationSpeed: 0.00035,
+
+  pulseSpeed: 0.003,
+
+  particleSpeed: 0.035
+
+};
+
+
+// ==================================================
+// RESIZE
+// ==================================================
+
 function resize() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
 
-  createHeart();
+  W = window.innerWidth;
+
+  H = window.innerHeight;
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  canvas.width = W * dpr;
+
+  canvas.height = H * dpr;
+
+  canvas.style.width = W + "px";
+
+  canvas.style.height = H + "px";
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  createScene();
+
 }
 
 window.addEventListener("resize", resize);
 
-// Membuat tulisan membentuk hati
-function createHeart() {
-  words = [];
 
-  const scale = Math.min(W, H) / 36;
+// ==================================================
+// RANDOM
+// ==================================================
 
-  for (let i = 0; i < 350; i++) {
+function random(min, max) {
 
-    const t = Math.random() * Math.PI * 2;
+  return Math.random() * (max - min) + min;
+
+}
+
+
+// ==================================================
+// HEART MATHEMATICS
+// ==================================================
+
+function heartShape(t) {
+
+  const x = 16 * Math.pow(Math.sin(t), 3);
+
+  const y =
+    13 * Math.cos(t)
+    - 5 * Math.cos(2 * t)
+    - 2 * Math.cos(3 * t)
+    - Math.cos(4 * t);
+
+  return { x, y };
+
+}
+
+
+// ==================================================
+// HEART PARTICLE CREATION
+// ==================================================
+
+function createHeartParticles() {
+
+  heartParticles = [];
+
+  const scale = Math.min(W, H) * 0.021;
+
+  for (let i = 0; i < CONFIG.heartCount; i++) {
+
+    const angle = random(0, TWO_PI);
 
     const radius = Math.sqrt(Math.random());
 
-    const p = heart(t);
+    const heart = heartShape(angle);
 
-    words.push({
+    const tx = heart.x * scale * radius;
 
-      x: Math.random() * W,
-      y: Math.random() * H,
+    const ty = -heart.y * scale * radius;
 
-      tx: W / 2 + p.x * scale * radius,
-      ty: H / 2 - p.y * scale * radius,
+    const depth = random(-1, 1);
 
-      size: Math.random() * 8 + 7,
+    heartParticles.push({
 
-      speed: Math.random() * 0.025 + 0.008,
+      x: random(-W, W),
 
-      phase: Math.random() * 10,
+      y: random(-H, H),
 
-      text: Math.random() > 0.3
-        ? "I LOVE YOU"
-        : "love you",
+      z: depth,
 
-      color: Math.random() > 0.5
-        ? "#ff513d"
-        : "#ff9275"
+      tx,
+
+      ty,
+
+      tz: depth,
+
+      size: random(0.35, 1.7),
+
+      speed: random(0.008, 0.035),
+
+      phase: random(0, TWO_PI),
+
+      shimmer: random(0.5, 1),
+
+      color: Math.random() > 0.35
+        ? "#d8f3ff"
+        : "#ffffff"
+
     });
+
   }
+
 }
 
-// Animasi
-function animate(time) {
 
-  ctx.fillStyle = "rgba(5,5,5,0.25)";
+// ==================================================
+// BLUE PARTICLES
+// ==================================================
+
+function createBlueParticles() {
+
+  blueParticles = [];
+
+  for (let i = 0; i < CONFIG.blueCount; i++) {
+
+    blueParticles.push({
+
+      angle: random(0, TWO_PI),
+
+      radius: random(0.2, 1),
+
+      height: random(-1, 1),
+
+      speed: random(0.001, 0.009),
+
+      size: random(0.5, 2.4),
+
+      phase: random(0, TWO_PI),
+
+      alpha: random(0.3, 1)
+
+    });
+
+  }
+
+}
+
+
+// ==================================================
+// ORBIT PARTICLES
+// ==================================================
+
+function createOrbitParticles() {
+
+  orbitParticles = [];
+
+  for (let i = 0; i < CONFIG.orbitCount; i++) {
+
+    orbitParticles.push({
+
+      angle: random(0, TWO_PI),
+
+      radius: random(0.75, 1.55),
+
+      speed: random(0.001, 0.004),
+
+      size: random(0.4, 1.6),
+
+      phase: random(0, TWO_PI),
+
+      color: Math.random() > 0.5
+        ? "#00aaff"
+        : "#6ceaff"
+
+    });
+
+  }
+
+}
+
+
+// ==================================================
+// BACKGROUND STARS
+// ==================================================
+
+function createStars() {
+
+  backgroundStars = [];
+
+  for (let i = 0; i < CONFIG.starCount; i++) {
+
+    backgroundStars.push({
+
+      x: random(0, W),
+
+      y: random(0, H),
+
+      size: random(0.3, 1.5),
+
+      alpha: random(0.2, 1),
+
+      phase: random(0, TWO_PI),
+
+      speed: random(0.05, 0.3)
+
+    });
+
+  }
+
+}
+
+
+// ==================================================
+// SPARKS
+// ==================================================
+
+function createSparks() {
+
+  sparkParticles = [];
+
+  for (let i = 0; i < CONFIG.sparkCount; i++) {
+
+    sparkParticles.push({
+
+      x: random(0, W),
+
+      y: random(0, H),
+
+      vx: random(-0.5, 0.5),
+
+      vy: random(-1.5, -0.1),
+
+      size: random(0.5, 2),
+
+      alpha: random(0.2, 1),
+
+      life: random(0.2, 1)
+
+    });
+
+  }
+
+}
+
+
+// ==================================================
+// CREATE SCENE
+// ==================================================
+
+function createScene() {
+
+  createHeartParticles();
+
+  createBlueParticles();
+
+  createOrbitParticles();
+
+  createStars();
+
+  createSparks();
+
+}
+
+
+// ==================================================
+// 3D HEART ROTATION
+// ==================================================
+
+function rotate3D(x, y, z, angleY, angleX) {
+
+  // Rotation Y
+  const x1 =
+    x * Math.cos(angleY)
+    - z * Math.sin(angleY);
+
+  const z1 =
+    x * Math.sin(angleY)
+    + z * Math.cos(angleY);
+
+  // Rotation X
+  const y2 =
+    y * Math.cos(angleX)
+    - z1 * Math.sin(angleX);
+
+  const z2 =
+    y * Math.sin(angleX)
+    + z1 * Math.cos(angleX);
+
+  return {
+    x: x1,
+    y: y2,
+    z: z2
+  };
+
+}
+
+
+// ==================================================
+// 3D PROJECTION
+// ==================================================
+
+function project(point, scale) {
+
+  const perspective = 500;
+
+  const depth = perspective / (perspective + point.z * 100);
+
+  return {
+
+    x: W / 2 + point.x * scale * depth,
+
+    y: H * 0.46 + point.y * scale * depth,
+
+    depth
+
+  };
+
+}
+
+
+// ==================================================
+// DRAW BACKGROUND
+// ==================================================
+
+function drawBackground() {
+
+  const gradient = ctx.createRadialGradient(
+    W / 2,
+    H * 0.45,
+    0,
+    W / 2,
+    H * 0.45,
+    Math.max(W, H) * 0.75
+  );
+
+  gradient.addColorStop(0, "#07101d");
+
+  gradient.addColorStop(0.45, "#020711");
+
+  gradient.addColorStop(1, "#000000");
+
+  ctx.fillStyle = gradient;
+
   ctx.fillRect(0, 0, W, H);
+
+}
+
+
+// ==================================================
+// DRAW STARS
+// ==================================================
+
+function drawStars() {
+
+  for (const star of backgroundStars) {
+
+    const flicker =
+      0.3 + Math.abs(Math.sin(time * 0.002 + star.phase)) * 0.7;
+
+    ctx.globalAlpha = star.alpha * flicker;
+
+    ctx.fillStyle = "#bdeaff";
+
+    ctx.fillRect(
+      star.x,
+      star.y,
+      star.size,
+      star.size
+    );
+
+  }
+
+  ctx.globalAlpha = 1;
+
+}
+
+
+// ==================================================
+// BLUE LIGHT GLOW
+// ==================================================
+
+function drawBlueGlow() {
+
+  const pulse =
+    1 + Math.sin(time * CONFIG.pulseSpeed) * 0.1;
+
+  const x = W / 2;
+
+  const y = H * 0.75;
+
+  ctx.save();
+
+  ctx.translate(x, y);
+
+  ctx.scale(pulse, 1);
+
+  const glow = ctx.createRadialGradient(
+    0, 0, 0,
+    0, 0, Math.min(W, H) * 0.35
+  );
+
+  glow.addColorStop(0, "rgba(0,180,255,0.7)");
+
+  glow.addColorStop(0.15, "rgba(0,110,255,0.3)");
+
+  glow.addColorStop(0.5, "rgba(0,50,255,0.08)");
+
+  glow.addColorStop(1, "rgba(0,0,0,0)");
+
+  ctx.fillStyle = glow;
+
+  ctx.fillRect(
+    -W / 2,
+    -H / 2,
+    W,
+    H
+  );
+
+  ctx.restore();
+
+}
+
+
+// ==================================================
+// MOVING SPOTLIGHT
+// ==================================================
+
+function drawSpotlight() {
+
+  const angle = time * 0.0007;
+
+  const lightX =
+    W / 2 + Math.sin(angle) * W * 0.35;
+
+  const lightY =
+    H * 0.25 + Math.cos(angle * 0.7) * H * 0.1;
+
+  ctx.save();
+
+  ctx.globalCompositeOperation = "screen";
+
+  // Lamp beam
+  const beam = ctx.createLinearGradient(
+    lightX,
+    lightY,
+    W / 2,
+    H * 0.75
+  );
+
+  beam.addColorStop(0, "rgba(80,180,255,0.0)");
+
+  beam.addColorStop(0.4, "rgba(70,160,255,0.035)");
+
+  beam.addColorStop(1, "rgba(0,100,255,0.13)");
+
+  ctx.fillStyle = beam;
+
+  ctx.beginPath();
+
+  ctx.moveTo(lightX - 25, lightY);
+
+  ctx.lineTo(lightX + 25, lightY);
+
+  ctx.lineTo(W / 2 + W * 0.3, H);
+
+  ctx.lineTo(W / 2 - W * 0.3, H);
+
+  ctx.closePath();
+
+  ctx.fill();
+
+  // Spotlight
+  const spotlight = ctx.createRadialGradient(
+    lightX,
+    lightY,
+    0,
+    lightX,
+    lightY,
+    Math.min(W, H) * 0.35
+  );
+
+  spotlight.addColorStop(0, "rgba(130,220,255,0.16)");
+
+  spotlight.addColorStop(0.25, "rgba(40,140,255,0.07)");
+
+  spotlight.addColorStop(1, "rgba(0,0,0,0)");
+
+  ctx.fillStyle = spotlight;
+
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.restore();
+
+}
+
+
+// ==================================================
+// SECOND SPOTLIGHT
+// ==================================================
+
+function drawSecondSpotlight() {
+
+  const angle = time * 0.00045 + Math.PI;
+
+  const lightX =
+    W / 2 + Math.sin(angle) * W * 0.4;
+
+  const lightY = H * 0.12;
+
+  ctx.save();
+
+  ctx.globalCompositeOperation = "screen";
+
+  const gradient = ctx.createLinearGradient(
+    lightX,
+    lightY,
+    W / 2,
+    H * 0.65
+  );
+
+  gradient.addColorStop(0, "rgba(0,0,0,0)");
+
+  gradient.addColorStop(0.5, "rgba(70,130,255,0.04)");
+
+  gradient.addColorStop(1, "rgba(70,190,255,0.1)");
+
+  ctx.fillStyle = gradient;
+
+  ctx.beginPath();
+
+  ctx.moveTo(lightX - 15, lightY);
+
+  ctx.lineTo(lightX + 15, lightY);
+
+  ctx.lineTo(W / 2 + W * 0.2, H);
+
+  ctx.lineTo(W / 2 - W * 0.2, H);
+
+  ctx.closePath();
+
+  ctx.fill();
+
+  ctx.restore();
+
+}
+
+
+// ==================================================
+// DRAW HEART PARTICLES
+// ==================================================
+
+function drawHeart() {
+
+  const scale = Math.min(W, H) * 0.021;
+
+  const angleY = time * CONFIG.rotationSpeed;
+
+  const angleX =
+    Math.sin(time * 0.0004) * 0.25;
+
+  const pulse =
+    1 + Math.sin(time * CONFIG.pulseSpeed) * 0.035;
+
+  // Sort depth for 3D effect
+  const projected = [];
+
+  for (const p of heartParticles) {
+
+    const rotated = rotate3D(
+      p.tx,
+      p.ty,
+      p.tz,
+      angleY,
+      angleX
+    );
+
+    const point = project(rotated, scale * pulse);
+
+    projected.push({
+      ...point,
+      size: p.size,
+      color: p.color,
+      phase: p.phase,
+      shimmer: p.shimmer
+    });
+
+  }
+
+  projected.sort((a, b) => a.depth - b.depth);
+
+  ctx.save();
+
+  ctx.globalCompositeOperation = "screen";
+
+  for (const p of projected) {
+
+    const flicker =
+      0.35 + Math.abs(Math.sin(time * 0.004 + p.phase)) * 0.65;
+
+    ctx.globalAlpha = flicker;
+
+    ctx.fillStyle = p.color;
+
+    ctx.shadowColor = "#6acbff";
+
+    ctx.shadowBlur = 5 * p.depth;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      p.x,
+      p.y,
+      p.size * p.depth,
+      0,
+      TWO_PI
+    );
+
+    ctx.fill();
+
+  }
+
+  ctx.restore();
+
+}
+
+
+// ==================================================
+// BLUE PARTICLES MOVING AROUND HEART
+// ==================================================
+
+function drawBlueParticles() {
+
+  const scale = Math.min(W, H);
+
+  ctx.save();
+
+  ctx.globalCompositeOperation = "screen";
+
+  for (const p of blueParticles) {
+
+    p.angle += p.speed;
+
+    const radius =
+      p.radius * scale * 0.27;
+
+    const x =
+      W / 2
+      + Math.cos(p.angle) * radius;
+
+    const y =
+      H * 0.46
+      + Math.sin(p.angle * 1.3 + p.phase)
+      * radius * 0.65;
+
+    const z =
+      Math.sin(p.angle + p.phase);
+
+    const size =
+      p.size * (1 + z * 0.3);
+
+    ctx.globalAlpha =
+      p.alpha * (0.4 + Math.abs(z) * 0.6);
+
+    ctx.fillStyle = "#00aaff";
+
+    ctx.shadowColor = "#00aaff";
+
+    ctx.shadowBlur = 15;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      x,
+      y,
+      Math.max(0.2, size),
+      0,
+      TWO_PI
+    );
+
+    ctx.fill();
+
+  }
+
+  ctx.restore();
+
+}
+
+
+// ==================================================
+// ORBITING BLUE RINGS
+// ==================================================
+
+function drawOrbitParticles() {
+
+  const scale = Math.min(W, H);
+
+  ctx.save();
+
+  ctx.globalCompositeOperation = "screen";
+
+  for (const p of orbitParticles) {
+
+    p.angle += p.speed;
+
+    const radius =
+      p.radius * scale * 0.2;
+
+    const x =
+      W / 2
+      + Math.cos(p.angle) * radius;
+
+    const y =
+      H * 0.46
+      + Math.sin(p.angle) * radius * 0.5;
+
+    const z =
+      Math.cos(p.angle * 2);
+
+    ctx.globalAlpha =
+      0.35 + Math.abs(z) * 0.65;
+
+    ctx.fillStyle = p.color;
+
+    ctx.shadowColor = "#00aaff";
+
+    ctx.shadowBlur = 10;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      x,
+      y,
+      p.size,
+      0,
+      TWO_PI
+    );
+
+    ctx.fill();
+
+  }
+
+  ctx.restore();
+
+}
+
+
+// ==================================================
+// FLOATING SPARKS
+// ==================================================
+
+function drawSparks() {
+
+  ctx.save();
+
+  ctx.globalCompositeOperation = "screen";
+
+  for (const p of sparkParticles) {
+
+    p.x += p.vx;
+
+    p.y += p.vy;
+
+    p.life -= 0.002;
+
+    if (p.y < 0 || p.life <= 0) {
+
+      p.x = random(0, W);
+
+      p.y = H + random(0, 50);
+
+      p.vy = random(-1.5, -0.1);
+
+      p.life = random(0.5, 1);
+
+    }
+
+    ctx.globalAlpha = p.alpha * p.life;
+
+    ctx.fillStyle = "#64caff";
+
+    ctx.shadowColor = "#00aaff";
+
+    ctx.shadowBlur = 12;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      p.x,
+      p.y,
+      p.size,
+      0,
+      TWO_PI
+    );
+
+    ctx.fill();
+
+  }
+
+  ctx.restore();
+
+}
+
+
+// ==================================================
+// HEART OUTLINE GLOW
+// ==================================================
+
+function drawHeartOutline() {
+
+  const scale = Math.min(W, H) * 0.021;
+
+  const angleY = time * CONFIG.rotationSpeed;
+
+  const pulse =
+    1 + Math.sin(time * CONFIG.pulseSpeed) * 0.035;
+
+  ctx.save();
+
+  ctx.translate(W / 2, H * 0.46);
+
+  ctx.rotate(Math.sin(time * 0.0004) * 0.08);
+
+  ctx.scale(pulse, pulse);
+
+  ctx.beginPath();
+
+  for (let i = 0; i <= 240; i++) {
+
+    const t = i / 240 * TWO_PI;
+
+    const p = heartShape(t);
+
+    const rotated = rotate3D(
+      p.x * scale,
+      -p.y * scale,
+      0,
+      angleY,
+      0
+    );
+
+    const x = rotated.x;
+
+    const y = rotated.y;
+
+    if (i === 0) {
+
+      ctx.moveTo(x, y);
+
+    } else {
+
+      ctx.lineTo(x, y);
+
+    }
+
+  }
+
+  ctx.closePath();
+
+  ctx.strokeStyle = "rgba(50,160,255,0.2)";
+
+  ctx.lineWidth = 1;
+
+  ctx.shadowColor = "#0088ff";
+
+  ctx.shadowBlur = 20;
+
+  ctx.stroke();
+
+  ctx.restore();
+
+}
+
+
+// ==================================================
+// MAIN ANIMATION
+// ==================================================
+
+function animate() {
+
+  time++;
+
+  drawBackground();
+
+  drawStars();
 
   if (started) {
 
-    words.forEach((w, i) => {
+    drawBlueGlow();
 
-      const floatX =
-        Math.sin(time * 0.001 + w.phase) * 12;
+    drawSpotlight();
 
-      const floatY =
-        Math.cos(time * 0.0015 + w.phase) * 10;
+    drawSecondSpotlight();
 
-      w.x += (w.tx - w.x) * w.speed;
-      w.y += (w.ty - w.y) * w.speed;
+    drawBlueParticles();
 
-      ctx.save();
+    drawOrbitParticles();
 
-      ctx.translate(
-        w.x + floatX,
-        w.y + floatY
-      );
+    drawHeartOutline();
 
-      ctx.font = `bold ${w.size}px Arial`;
+    drawHeart();
 
-      ctx.fillStyle = w.color;
+    drawSparks();
 
-      ctx.globalAlpha =
-        0.45 + Math.abs(Math.sin(time * 0.002 + i)) * 0.55;
-
-      ctx.shadowColor = "#ff3010";
-      ctx.shadowBlur = 8;
-
-      ctx.fillText(w.text, 0, 0);
-
-      ctx.restore();
-
-    });
   }
 
   requestAnimationFrame(animate);
+
 }
 
-// Tombol buka
-async function startLove() {
+
+// ==================================================
+// START EXPERIENCE
+// ==================================================
+
+async function startExperience() {
 
   started = true;
 
-  document.getElementById("start").style.display = "none";
+  const intro = document.getElementById("intro");
+
+  intro.style.opacity = "0";
+
+  setTimeout(() => {
+
+    intro.style.display = "none";
+
+  }, 1500);
+
+  document.getElementById("title").classList.add("show");
+
+  document.getElementById("subtitle").classList.add("show");
+
+  setTimeout(() => {
+
+    document.getElementById("message").classList.add("show");
+
+  }, 5000);
 
   try {
 
@@ -225,18 +1188,23 @@ async function startLove() {
 
     musicPlaying = true;
 
-    document.getElementById("musicBtn").textContent =
-      "⏸ Pause Music";
+    document.getElementById("musicButton").textContent =
+      "⏸ PAUSE MUSIC";
 
   } catch (error) {
 
-    document.getElementById("musicBtn").textContent =
-      "🎵 Play Music";
+    document.getElementById("musicButton").textContent =
+      "🎵 PLAY MUSIC";
 
   }
+
 }
 
-// Tombol musik
+
+// ==================================================
+// MUSIC BUTTON
+// ==================================================
+
 async function toggleMusic() {
 
   if (musicPlaying) {
@@ -245,8 +1213,8 @@ async function toggleMusic() {
 
     musicPlaying = false;
 
-    document.getElementById("musicBtn").textContent =
-      "🎵 Play Music";
+    document.getElementById("musicButton").textContent =
+      "🎵 PLAY MUSIC";
 
   } else {
 
@@ -256,21 +1224,27 @@ async function toggleMusic() {
 
       musicPlaying = true;
 
-      document.getElementById("musicBtn").textContent =
-        "⏸ Pause Music";
+      document.getElementById("musicButton").textContent =
+        "⏸ PAUSE MUSIC";
 
     } catch (error) {
 
-      alert("Musik belum bisa diputar. Periksa file lagu di GitHub.");
+      alert("Musik belum bisa diputar. Periksa file audio.");
 
     }
+
   }
+
 }
 
-// Mulai
+
+// ==================================================
+// INITIALIZATION
+// ==================================================
+
 resize();
 
-requestAnimationFrame(animate);
+animate();
 
 </script>
 
