@@ -4,8 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>For Abang aan❤️</title>
+<title>For My Abang ❤️</title>
 
 <style>
 * {
@@ -15,7 +14,7 @@
 }
 
 body {
-  background: #000;
+  background: #01030b;
   overflow: hidden;
   font-family: Arial, sans-serif;
   color: white;
@@ -32,87 +31,98 @@ canvas {
   position: fixed;
   inset: 0;
   z-index: 10;
-  background: radial-gradient(circle, #071329, #000 75%);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 22px;
   text-align: center;
+  background: radial-gradient(circle, #071a35, #01030b 75%);
   transition: opacity 1.5s;
+  padding: 20px;
 }
 
 #intro h1 {
-  font-size: clamp(25px, 6vw, 45px);
-  color: #9eeaff;
-  text-shadow: 0 0 20px #008cff;
+  color: #8ee6ff;
+  font-size: clamp(28px, 6vw, 58px);
+  text-shadow: 0 0 25px #008cff;
 }
 
 #intro p {
-  color: #aaa;
+  color: #c5d9ec;
+  font-size: 18px;
 }
 
 button {
-  padding: 14px 28px;
-  border-radius: 40px;
-  border: 1px solid #00aaff;
-  background: #061a35;
+  padding: 16px 35px;
+  border: 1px solid #36caff;
+  border-radius: 50px;
   color: white;
-  font-size: 15px;
+  background: #071a35;
+  font-size: 17px;
   cursor: pointer;
-  box-shadow: 0 0 20px #008cff55;
+  box-shadow: 0 0 25px #008cff80;
+  transition: .3s;
 }
 
-#musicButton {
-  position: fixed;
-  right: 15px;
-  bottom: 18px;
-  z-index: 8;
-  font-size: 12px;
+button:hover {
+  background: #063568;
+  box-shadow: 0 0 35px #00aaff;
 }
 
 #title {
   position: fixed;
-  top: 9%;
+  z-index: 3;
+  top: 7%;
   width: 100%;
   text-align: center;
-  color: #b9edff;
-  font-size: clamp(20px, 5vw, 38px);
-  letter-spacing: 4px;
-  text-shadow: 0 0 15px #008cff;
+  font-size: clamp(24px, 5vw, 45px);
+  color: #a7eaff;
+  letter-spacing: 5px;
+  text-shadow: 0 0 20px #008cff;
   opacity: 0;
   transition: opacity 2s;
-  pointer-events: none;
 }
 
 #subtitle {
   position: fixed;
-  top: 17%;
+  z-index: 3;
+  top: 16%;
   width: 100%;
   text-align: center;
-  color: #66bfff;
-  font-size: 12px;
+  color: #8fdfff;
   letter-spacing: 3px;
+  font-size: 13px;
   opacity: 0;
   transition: opacity 2s;
-  pointer-events: none;
 }
 
 #message {
   position: fixed;
-  bottom: 12%;
+  z-index: 3;
+  bottom: 8%;
   width: 100%;
   text-align: center;
-  color: #b9eaff;
-  font-size: clamp(14px, 3vw, 20px);
+  color: #c4ecff;
+  font-size: clamp(15px, 3vw, 21px);
   text-shadow: 0 0 15px #008cff;
+  line-height: 1.8;
   opacity: 0;
   transition: opacity 3s;
-  pointer-events: none;
+  padding: 0 15px;
 }
 
 .show {
   opacity: 1 !important;
+}
+
+#musicButton {
+  position: fixed;
+  z-index: 5;
+  right: 15px;
+  bottom: 15px;
+  padding: 10px 18px;
+  font-size: 12px;
 }
 </style>
 </head>
@@ -124,19 +134,21 @@ button {
 <div id="intro">
   <h1>FOR MY ABANG ❤️</h1>
   <p>A little universe made just for you...</p>
-  <button onclick="startLove()">OPEN YOUR HEART ❤️</button>
+  <button onclick="startLove()">OPEN YOUR HEART 💙</button>
 </div>
 
-<div id="title">I LOVE YOU ABANG</div>
+<div id="title">I LOVE YOU, ABANG ❤️</div>
 
 <div id="subtitle">
-  YOU ARE MY FAVORITE PERSON 💙
+  YOU ARE MY FAVORITE PERSON ✨
 </div>
 
 <div id="message">
-  I LOVE YOU, ABANG ❤️
-  <br><br>
-  You make my world brighter ✨
+  For my favorite person ❤️
+  <br>
+  You make my world brighter.
+  <br>
+  I hope this little universe makes you smile 💙
 </div>
 
 <button id="musicButton" onclick="toggleMusic()">
@@ -150,49 +162,142 @@ button {
 <script>
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-
 const music = document.getElementById("music");
 
-let W, H;
-let time = 0;
+let W, H, time = 0;
 let started = false;
 let musicPlaying = false;
 
-let hearts = [];
-let blueParticles = [];
+let heartParticles = [];
 let stars = [];
+let blueParticles = [];
 let orbitParticles = [];
 
 const TWO_PI = Math.PI * 2;
 
-// =============================
-// HEART SHAPE
-// =============================
-
-function heart(t) {
+// BENTUK HATI
+function heartPoint(t) {
   return {
     x: 16 * Math.pow(Math.sin(t), 3),
-
-    y:
-      13 * Math.cos(t)
+    y: 13 * Math.cos(t)
       - 5 * Math.cos(2 * t)
       - 2 * Math.cos(3 * t)
       - Math.cos(4 * t)
   };
 }
 
-// =============================
-// RANDOM
-// =============================
+// MEMBUAT GARIS HATI
+function createHeartPolygon() {
+  const points = [];
+  for (let i = 0; i < 400; i++) {
+    const p = heartPoint(i / 400 * TWO_PI);
+    points.push(p);
+  }
+  return points;
+}
+
+const polygon = createHeartPolygon();
+
+// CEK APAKAH TITIK BERADA DI DALAM HATI
+function insideHeart(x, y) {
+  let inside = false;
+
+  for (let i = 0, j = polygon.length - 1;
+       i < polygon.length; j = i++) {
+    const a = polygon[i];
+    const b = polygon[j];
+
+    const intersect =
+      ((a.y > y) !== (b.y > y)) &&
+      (x < (b.x - a.x) * (y - a.y) /
+      (b.y - a.y) + a.x);
+
+    if (intersect) inside = !inside;
+  }
+
+  return inside;
+}
 
 function random(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-// =============================
-// RESIZE
-// =============================
+// MEMBUAT PARTIKEL HATI 3D
+function createHeart() {
+  heartParticles = [];
 
+  for (let i = 0; i < 2600; i++) {
+    let x, y;
+    let attempts = 0;
+
+    do {
+      x = random(-17, 17);
+      y = random(-14, 13);
+      attempts++;
+    } while (!insideHeart(x, y) && attempts < 100);
+
+    if (!insideHeart(x, y)) continue;
+
+    heartParticles.push({
+      x: x,
+      y: y,
+      z: random(-5, 5),
+      size: random(0.5, 1.8),
+      phase: random(0, TWO_PI),
+      color: Math.random() > 0.35
+        ? "#a8eaff"
+        : "#ffffff"
+    });
+  }
+}
+
+// BINTIK BIRU BERKILAU
+function createBlueParticles() {
+  blueParticles = [];
+
+  for (let i = 0; i < 450; i++) {
+    blueParticles.push({
+      angle: random(0, TWO_PI),
+      radius: random(0.25, 1),
+      speed: random(0.001, 0.009),
+      size: random(0.5, 2.2),
+      phase: random(0, TWO_PI)
+    });
+  }
+}
+
+// PARTIKEL ORBIT
+function createOrbit() {
+  orbitParticles = [];
+
+  for (let i = 0; i < 180; i++) {
+    orbitParticles.push({
+      angle: random(0, TWO_PI),
+      radius: random(0.8, 1.5),
+      speed: random(0.001, 0.005),
+      size: random(0.6, 1.8),
+      color: Math.random() > 0.5
+        ? "#00aaff"
+        : "#a1eaff"
+    });
+  }
+}
+
+// BINTANG
+function createStars() {
+  stars = [];
+
+  for (let i = 0; i < 180; i++) {
+    stars.push({
+      x: random(0, W),
+      y: random(0, H),
+      size: random(0.4, 1.5),
+      phase: random(0, TWO_PI)
+    });
+  }
+}
+
+// UKURAN LAYAR
 function resize() {
   W = window.innerWidth;
   H = window.innerHeight;
@@ -207,289 +312,138 @@ function resize() {
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  createScene();
-}
-
-window.addEventListener("resize", resize);
-
-// =============================
-// CREATE HEART
-// =============================
-
-function createHeart() {
-  hearts = [];
-
-  const scale = Math.min(W, H) * 0.021;
-
-  for (let i = 0; i < 2600; i++) {
-    const t = random(0, TWO_PI);
-
-    const radius = Math.sqrt(Math.random());
-
-    const p = heart(t);
-
-    hearts.push({
-      x: random(-W, W),
-      y: random(-H, H),
-
-      tx: p.x * scale * radius,
-      ty: -p.y * scale * radius,
-
-      tz: random(-1, 1),
-
-      size: random(0.4, 1.7),
-
-      speed: random(0.008, 0.035),
-
-      phase: random(0, TWO_PI),
-
-      color: Math.random() > 0.4
-        ? "#ffffff"
-        : "#a5e8ff"
-    });
-  }
-}
-
-// =============================
-// BLUE PARTICLES
-// =============================
-
-function createBlueParticles() {
-  blueParticles = [];
-
-  for (let i = 0; i < 600; i++) {
-    blueParticles.push({
-      angle: random(0, TWO_PI),
-      radius: random(0.3, 1.5),
-      speed: random(0.001, 0.008),
-      size: random(0.5, 2),
-      phase: random(0, TWO_PI)
-    });
-  }
-}
-
-// =============================
-// ORBIT
-// =============================
-
-function createOrbit() {
-  orbitParticles = [];
-
-  for (let i = 0; i < 150; i++) {
-    orbitParticles.push({
-      angle: random(0, TWO_PI),
-      radius: random(0.8, 1.6),
-      speed: random(0.001, 0.004),
-      size: random(0.5, 1.5),
-      color: Math.random() > 0.5
-        ? "#00aaff"
-        : "#75eaff"
-    });
-  }
-}
-
-// =============================
-// STARS
-// =============================
-
-function createStars() {
-  stars = [];
-
-  for (let i = 0; i < 180; i++) {
-    stars.push({
-      x: random(0, W),
-      y: random(0, H),
-      size: random(0.3, 1.5),
-      phase: random(0, TWO_PI)
-    });
-  }
-}
-
-// =============================
-// CREATE SCENE
-// =============================
-
-function createScene() {
   createHeart();
   createBlueParticles();
   createOrbit();
   createStars();
 }
 
-// =============================
-// 3D ROTATION
-// =============================
+window.addEventListener("resize", resize);
 
+// ROTASI 3D
 function rotate3D(x, y, z, angleY, angleX) {
   const x1 = x * Math.cos(angleY) - z * Math.sin(angleY);
-
   const z1 = x * Math.sin(angleY) + z * Math.cos(angleY);
 
-  const y2 = y * Math.cos(angleX) - z1 * Math.sin(angleX);
-
+  const y1 = y * Math.cos(angleX) - z1 * Math.sin(angleX);
   const z2 = y * Math.sin(angleX) + z1 * Math.cos(angleX);
 
-  return {
-    x: x1,
-    y: y2,
-    z: z2
-  };
+  return { x: x1, y: y1, z: z2 };
 }
 
-// =============================
-// PROJECTION
-// =============================
-
+// PROYEKSI PERSPEKTIF
 function project(p, scale) {
   const perspective = 500;
-
-  const depth = perspective / (perspective + p.z * 100);
+  const depth = perspective / (perspective + p.z * 8);
 
   return {
     x: W / 2 + p.x * scale * depth,
-    y: H * 0.46 + p.y * scale * depth,
+    y: H * 0.49 + p.y * scale * depth,
     depth
   };
 }
 
-// =============================
-// BACKGROUND
-// =============================
-
+// LATAR BELAKANG
 function drawBackground() {
   const gradient = ctx.createRadialGradient(
-    W / 2,
-    H * 0.45,
-    0,
-    W / 2,
-    H * 0.45,
-    Math.max(W, H) * 0.8
+    W / 2, H / 2, 0,
+    W / 2, H / 2, Math.max(W, H) * 0.8
   );
 
-  gradient.addColorStop(0, "#07101d");
-  gradient.addColorStop(0.5, "#020711");
+  gradient.addColorStop(0, "#07182c");
+  gradient.addColorStop(0.5, "#020713");
   gradient.addColorStop(1, "#000000");
 
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, W, H);
 }
 
-// =============================
-// STARS
-// =============================
-
+// BINTANG BERKEDIP
 function drawStars() {
   for (const s of stars) {
     ctx.globalAlpha =
       0.2 + Math.abs(Math.sin(time * 0.003 + s.phase)) * 0.8;
 
-    ctx.fillStyle = "#bdeaff";
+    ctx.fillStyle = "#c7edff";
+    ctx.shadowColor = "#00aaff";
+    ctx.shadowBlur = 8;
 
-    ctx.fillRect(s.x, s.y, s.size, s.size);
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.size, 0, TWO_PI);
+    ctx.fill();
   }
 
   ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
 }
 
-// =============================
-// BLUE GLOW
-// =============================
-
+// CAHAYA BIRU DI BELAKANG HATI
 function drawGlow() {
-  const pulse = 1 + Math.sin(time * 0.003) * 0.1;
-
-  ctx.save();
-
-  ctx.translate(W / 2, H * 0.75);
-  ctx.scale(pulse, 1);
+  const pulse = 1 + Math.sin(time * 0.003) * 0.12;
 
   const glow = ctx.createRadialGradient(
-    0, 0, 0,
-    0, 0, Math.min(W, H) * 0.35
+    W / 2, H * 0.49, 0,
+    W / 2, H * 0.49, Math.min(W, H) * 0.42
   );
 
-  glow.addColorStop(0, "rgba(0,180,255,0.7)");
-  glow.addColorStop(0.2, "rgba(0,110,255,0.3)");
+  glow.addColorStop(0, "rgba(0,170,255,0.3)");
+  glow.addColorStop(0.4, "rgba(0,100,255,0.12)");
   glow.addColorStop(1, "rgba(0,0,0,0)");
 
-  ctx.fillStyle = glow;
-  ctx.fillRect(-W / 2, -H / 2, W, H);
+  ctx.save();
+  ctx.translate(W / 2, H * 0.49);
+  ctx.scale(pulse, pulse);
+  ctx.translate(-W / 2, -H * 0.49);
 
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
   ctx.restore();
 }
 
-// =============================
-// MOVING SPOTLIGHT
-// =============================
-
+// LAMPU SOROT
 function drawSpotlight() {
-  const angle = time * 0.0007;
-
-  const x = W / 2 + Math.sin(angle) * W * 0.35;
-
-  const y = H * 0.12;
-
   ctx.save();
-
   ctx.globalCompositeOperation = "screen";
 
-  const beam = ctx.createLinearGradient(
-    x, y,
-    W / 2, H
-  );
+  for (let i = 0; i < 3; i++) {
+    const angle = time * 0.0007 + i * 2.1;
+    const x = W / 2 + Math.sin(angle) * W * 0.4;
 
-  beam.addColorStop(0, "rgba(0,0,0,0)");
-  beam.addColorStop(0.5, "rgba(50,150,255,0.04)");
-  beam.addColorStop(1, "rgba(50,180,255,0.13)");
+    const gradient = ctx.createLinearGradient(
+      x, 0, W / 2, H
+    );
 
-  ctx.fillStyle = beam;
+    gradient.addColorStop(0, "rgba(0,0,0,0)");
+    gradient.addColorStop(0.5, "rgba(30,140,255,0.035)");
+    gradient.addColorStop(1, "rgba(40,170,255,0.13)");
 
-  ctx.beginPath();
-
-  ctx.moveTo(x - 20, y);
-  ctx.lineTo(x + 20, y);
-  ctx.lineTo(W / 2 + W * 0.3, H);
-  ctx.lineTo(W / 2 - W * 0.3, H);
-
-  ctx.closePath();
-  ctx.fill();
-
-  const light = ctx.createRadialGradient(
-    x, y, 0,
-    x, y, Math.min(W, H) * 0.3
-  );
-
-  light.addColorStop(0, "rgba(100,200,255,0.15)");
-  light.addColorStop(1, "rgba(0,0,0,0)");
-
-  ctx.fillStyle = light;
-  ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.moveTo(x - 15, 0);
+    ctx.lineTo(x + 15, 0);
+    ctx.lineTo(W / 2 + W * 0.22, H);
+    ctx.lineTo(W / 2 - W * 0.22, H);
+    ctx.closePath();
+    ctx.fill();
+  }
 
   ctx.restore();
 }
 
-// =============================
-// DRAW HEART PARTICLES
-// =============================
-
+// HATI BERPUTAR
 function drawHeart() {
-  const scale = Math.min(W, H) * 0.021;
+  const scale = Math.min(W, H) * 0.023;
 
-  const angleY = time * 0.0007;
-
-  const angleX = Math.sin(time * 0.0004) * 0.25;
-
-  const pulse = 1 + Math.sin(time * 0.003) * 0.04;
+  const angleY = time * 0.0008;
+  const angleX = Math.sin(time * 0.0005) * 0.3;
+  const pulse = 1 + Math.sin(time * 0.003) * 0.055;
 
   const projected = [];
 
-  for (const p of hearts) {
+  for (const p of heartParticles) {
     const rotated = rotate3D(
-      p.tx,
-      p.ty,
-      p.tz,
-      angleY,
-      angleX
+      p.x, p.y, p.z,
+      angleY, angleX
     );
 
     const point = project(rotated, scale * pulse);
@@ -505,117 +459,99 @@ function drawHeart() {
   projected.sort((a, b) => a.depth - b.depth);
 
   ctx.save();
-
   ctx.globalCompositeOperation = "screen";
 
   for (const p of projected) {
     ctx.globalAlpha =
-      0.4 + Math.abs(Math.sin(time * 0.004 + p.phase)) * 0.6;
+      0.45 + Math.abs(Math.sin(time * 0.004 + p.phase)) * 0.55;
 
     ctx.fillStyle = p.color;
-
-    ctx.shadowColor = "#6acbff";
-    ctx.shadowBlur = 5;
+    ctx.shadowColor = "#48bdff";
+    ctx.shadowBlur = 8;
 
     ctx.beginPath();
-
     ctx.arc(
       p.x,
       p.y,
-      p.size * p.depth,
+      Math.max(0.3, p.size * p.depth),
       0,
       TWO_PI
     );
-
     ctx.fill();
   }
 
   ctx.restore();
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
 }
 
-// =============================
-// BLUE PARTICLES
-// =============================
-
+// PARTIKEL BIRU YANG MENGELILINGI HATI
 function drawBlueParticles() {
   ctx.save();
-
   ctx.globalCompositeOperation = "screen";
 
   for (const p of blueParticles) {
     p.angle += p.speed;
 
-    const radius = p.radius * Math.min(W, H) * 0.25;
+    const radius = p.radius * Math.min(W, H) * 0.34;
 
     const x = W / 2 + Math.cos(p.angle) * radius;
-
-    const y = H * 0.46 +
+    const y = H * 0.49 +
       Math.sin(p.angle * 1.3 + p.phase) * radius * 0.6;
 
     ctx.globalAlpha =
-      0.4 + Math.abs(Math.sin(p.angle)) * 0.6;
+      0.3 + Math.abs(Math.sin(time * 0.006 + p.phase)) * 0.7;
 
-    ctx.fillStyle = "#00aaff";
-
+    ctx.fillStyle = "#29baff";
     ctx.shadowColor = "#00aaff";
     ctx.shadowBlur = 15;
 
     ctx.beginPath();
-
     ctx.arc(x, y, p.size, 0, TWO_PI);
-
     ctx.fill();
   }
 
   ctx.restore();
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
 }
 
-// =============================
-// ORBITING PARTICLES
-// =============================
-
+// PARTIKEL ORBIT BERCAHAYA
 function drawOrbit() {
   ctx.save();
-
   ctx.globalCompositeOperation = "screen";
 
   for (const p of orbitParticles) {
     p.angle += p.speed;
 
-    const radius = p.radius * Math.min(W, H) * 0.2;
+    const radius = p.radius * Math.min(W, H) * 0.22;
 
     const x = W / 2 + Math.cos(p.angle) * radius;
-
-    const y = H * 0.46 +
+    const y = H * 0.49 +
       Math.sin(p.angle) * radius * 0.5;
 
     ctx.globalAlpha =
-      0.4 + Math.abs(Math.sin(p.angle)) * 0.6;
+      0.4 + Math.abs(Math.sin(p.angle * 2)) * 0.6;
 
     ctx.fillStyle = p.color;
-
     ctx.shadowColor = "#00aaff";
-    ctx.shadowBlur = 12;
+    ctx.shadowBlur = 13;
 
     ctx.beginPath();
-
     ctx.arc(x, y, p.size, 0, TWO_PI);
-
     ctx.fill();
   }
 
   ctx.restore();
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
 }
 
-// =============================
-// MAIN ANIMATION
-// =============================
-
+// ANIMASI UTAMA
 function animate() {
   time++;
 
   drawBackground();
-
   drawStars();
 
   if (started) {
@@ -629,15 +565,11 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
-// =============================
-// START
-// =============================
-
+// MULAI ANIMASI DAN MUSIK
 async function startLove() {
   started = true;
 
   const intro = document.getElementById("intro");
-
   intro.style.opacity = "0";
 
   setTimeout(() => {
@@ -645,7 +577,6 @@ async function startLove() {
   }, 1500);
 
   document.getElementById("title").classList.add("show");
-
   document.getElementById("subtitle").classList.add("show");
 
   setTimeout(() => {
@@ -654,54 +585,36 @@ async function startLove() {
 
   try {
     await music.play();
-
     musicPlaying = true;
-
     document.getElementById("musicButton").textContent =
       "⏸ PAUSE MUSIC";
-
   } catch (error) {
     document.getElementById("musicButton").textContent =
       "🎵 PLAY MUSIC";
   }
 }
 
-// =============================
-// MUSIC
-// =============================
-
+// KONTROL MUSIK
 async function toggleMusic() {
   if (musicPlaying) {
     music.pause();
-
     musicPlaying = false;
-
     document.getElementById("musicButton").textContent =
       "🎵 PLAY MUSIC";
-
   } else {
     try {
       await music.play();
-
       musicPlaying = true;
-
       document.getElementById("musicButton").textContent =
         "⏸ PAUSE MUSIC";
-
     } catch (error) {
       alert("Musik belum bisa diputar. Periksa file audio.");
     }
   }
 }
 
-// =============================
-// INITIALIZE
-// =============================
-
 resize();
-
 animate();
-
 </script>
 
 </body>
